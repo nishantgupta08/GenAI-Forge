@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, JsCode
 
-
 BASE_LABEL = "Base (no quantization)"
 
 
@@ -47,7 +46,7 @@ def _labels_and_map(quant_list):
             repo = q.get("repo") or ""
             fmts = q.get("formats") or []
             label = repo if repo else (", ".join(fmts) if fmts else "Quantized")
-            # ensure uniqueness if duplicate labels
+            # ensure uniqueness
             orig = label
             i = 2
             while label in mapping:
@@ -59,32 +58,44 @@ def _labels_and_map(quant_list):
 
 
 def _preprocess_models_df(models_df: pd.DataFrame) -> pd.DataFrame:
+    # Prepare dataframe with required columns and per-row dropdown data
     df = models_df.copy()
     for col in ["name", "family", "source", "params", "quantizations"]:
         if col not in df.columns:
             df[col] = ""
-    # Summary text
+
     df["quantizations_display"] = df["quantizations"].apply(_format_quantizations)
-    # Raw + editor options
     df["quantizations_raw"] = df["quantizations"].apply(_safe_json)
 
-    # Build per-row options + mapping + default choice
-    labels_series = []
-    mapping_series = []
+    labels_series, mapping_series = [], []
     for _, row in df.iterrows():
         qlist = row.get("quantizations") or []
         labels, mapping = _labels_and_map(qlist if isinstance(qlist, list) else [])
         labels_series.append(labels)
         mapping_series.append(_safe_json(mapping))
-    df["quant_options"] = labels_series              # list[str] per row (used by JS)
-    df["quant_map"] = mapping_series                 # json map label -> entry (hidden)
-    df["quant_choice"] = BASE_LABEL                  # editable value shown to user
+
+    df["quant_options"] = labels_series
+    df["quant_map"] = mapping_series
+    df["quant_choice"] = BASE_LABEL
 
     display_cols = ["name", "source", "family", "params", "quant_choice", "quantizations_display", "quant_options", "quant_map"]
     return df[display_cols]
 
 
-def aggrid_model_picker_with_row_dropdown(models_df, key="aggrid_model_picker_row"):
+def aggrid_model_picker(models_df, key="aggrid_model_picker"):
+    """Backward-compatible entry point expected by utils.ui.__init__.
+    Renders a per-row quantization dropdown and returns a dict:
+      {
+        'name': ..., 'source': ..., 'family': ..., 'params': ...,
+        'selection': {
+           'variant': 'base' | 'quantized',
+           'quantization_repo': <str|None>,
+           'formats': <list|None>,
+           'label': <str>,
+        }
+      }
+    or None if nothing selected.
+    """
     df = _preprocess_models_df(models_df)
 
     # Controls: Search + Family
@@ -102,7 +113,7 @@ def aggrid_model_picker_with_row_dropdown(models_df, key="aggrid_model_picker_ro
     if sel_family and sel_family != "(All)":
         fdf = fdf[fdf["family"] == sel_family]
 
-    # JS function: per-row select options from quant_options
+    # Row-aware select editor
     editor_params_fn = JsCode(
         """function(params) {
               return { values: params.data.quant_options || ["Base (no quantization)"] };
@@ -123,27 +134,22 @@ def aggrid_model_picker_with_row_dropdown(models_df, key="aggrid_model_picker_ro
     grid_return = AgGrid(
         fdf,
         gridOptions=gb.build(),
-        update_mode=GridUpdateMode.MODEL_CHANGED,  # capture edits
+        update_mode=GridUpdateMode.MODEL_CHANGED,
         allow_unsafe_jscode=True,
         key=key,
         height=520,
         fit_columns_on_grid_load=True,
-        # data_return_mode = 'AS_INPUT' is default in newer versions; keep to ensure edits come back
     )
 
-    # Selected row (with current quant_choice)
     sel = grid_return.get("selected_rows")
     if isinstance(sel, pd.DataFrame):
         sel_row = sel.iloc[0].to_dict() if not sel.empty else None
     elif isinstance(sel, list) and sel:
         sel_row = sel[0]
     else:
-        sel_row = None
-
-    if not sel_row:
         return None
 
-    # Resolve selected label -> mapping
+    # Resolve label -> entry
     try:
         mapping = json.loads(sel_row.get("quant_map", "{}"))
     except Exception:
