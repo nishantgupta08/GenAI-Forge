@@ -114,3 +114,17 @@ class ConfigManager:
         self.tasks_config = self._load_json("tasks_config.json")
         self.models_config = self._load_json("models_config.json")
         self.parameters_config = self._load_json("parameters_config.json")
+        
+    def get_models_by_type(self, model_type: str) -> List[Dict]:
+        """Get models filtered by type (encoder, decoder, encoder-decoder).
+        Accepts either "encoder-decoder" or "encoder_decoder" and normalizes for matching.
+        """
+        models = self.models_config.get("models", [])
+        target = (model_type or "").replace("-", "_")
+        out = []
+        for model in models:
+            t = model.get("type")
+            t_norm = (t or "").replace("-", "_")
+            if t_norm == target:
+                out.append(model)
+        return out
