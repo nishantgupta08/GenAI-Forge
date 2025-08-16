@@ -3,15 +3,13 @@
 """
 Hugging Face crawler:
 - Collect base (non-quantized) models with downloads >= threshold (default 100_000)
-- Extract name, type, family (from config.model_type), parameter count
-- Discover quantized forks (gguf/gptq/awq/exl2 + bitsandbytes hints)
-- For each quant variant, record downloads; also compute min downloads across quant forks
-- Optionally download repos to disk
+- Extract ONLY: name, type (encoder/decoder/encoder-decoder), family (from config.model_type), params (num parameters)
+- Discover quantized forks (gguf/gptq/awq/exl2) and keep ONLY those with downloads >= quant_min_downloads (default 5_000)
+- Output does NOT include any downloads; quantization entries have NO params
 
-Usage examples:
-  python hf_crawler.py --out models.json
-  python hf_crawler.py --out models.json --min-downloads 250_000 --quant-min-downloads 10_000
-  python hf_crawler.py --out models.json --download base,quant --dst ./hf_models
+Usage:
+  python hf_crawler_min.py --out models.json
+  python hf_crawler_min.py --out models.json --min-downloads 250k --quant-min-downloads 10k
 
 Requirements:
   pip install "huggingface_hub>=0.16.4"
@@ -20,14 +18,24 @@ Requirements:
 import argparse
 import json
 import re
-import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-from huggingface_hub import HfApi, hf_hub_download, snapshot_download
-from huggingface_hub.utils._errors import HfHubHTTPError
+from huggingface_hub import HfApi, hf_hub_download
 
-# Detect common quantization suffixes
+# Back/forward compatible HTTP error (optional)
+try:
+    from huggingface_hub.errors import HfHubHTTPError  # newer
+except Exception:  # pragma: no cover
+    try:
+        from huggingface_hub.utils._errors import HfHubHTTPError  # older
+    except Exception:
+        class HfHubHTTPError(Exception):
+            pass
+
+# ---------------------- config ----------------------
+
+# Quantization format detectors
 QUANT_PATTERNS = {
     "gguf": r"(?:^|[-_/])gguf(?:$|[-_/])|\.gguf$",
     "gptq": r"(?:^|[-_/])gptq(?:$|[-_/])",
@@ -35,7 +43,7 @@ QUANT_PATTERNS = {
     "exl2": r"(?:^|[-_/])exl2(?:$|[-_/])",
 }
 
-# Architecture family mapping from config.model_type
+# Map config.model_type -> simplified family
 FAMILY_FROM_MODEL_TYPE = {
     # decoders
     "llama": "llama", "mistral": "mistral", "mixtral": "mistral",
@@ -51,6 +59,15 @@ FAMILY_FROM_MODEL_TYPE = {
 }
 
 # ---------------------- helpers ----------------------
+
+def parse_human_num(s: str) -> int:
+    """Accept 100_000, '100k', '2M', etc."""
+    s = s.strip().lower().replace("_", "")
+    if s.endswith("k"):
+        return int(float(s[:-1]) * 1_000)
+    if s.endswith("m"):
+        return int(float(s[:-1]) * 1_000_000)
+    return int(s)
 
 def is_quant_repo_id(repo_id: str) -> bool:
     low = repo_id.lower()
@@ -79,11 +96,10 @@ def arch_type_from_tags(tags: List[str]) -> str:
 def infer_family_from_model_type(model_type: Optional[str]) -> Optional[str]:
     if not model_type:
         return None
-    mt = model_type.lower()
+    mt = str(model_type).lower()
     return FAMILY_FROM_MODEL_TYPE.get(mt, mt)
 
 def safe_get_downloads(info) -> int:
-    # ModelInfo has downloads / downloadsAllTime depending on hub version
     val = getattr(info, "downloads", None)
     if val is None:
         val = getattr(info, "downloadsAllTime", None)
@@ -103,45 +119,85 @@ def load_config_json(repo_id: str) -> Optional[dict]:
     except Exception:
         return None
 
+# --- Robust parameter parsing (handles 'Model size', 'num_parameters', '7B', etc.) ---
+
+_PARAM_KEY_ALIASES = {
+    # normalized forms (lowercase, non-alnum stripped)
+    "nparameters",
+    "numparameters",
+    "parameters",
+    "params",
+    "modelsize",        # handles "Model size" / "model_size" / "model-size"
+    "parametercount",
+    "paramcount",
+    "nparams",
+    "numparams",
+}
+
+def _norm_key(k: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", str(k).lower())
+
+def _parse_params_value(v) -> Optional[int]:
+    """
+    Accept ints/floats or strings like '7B', '7.1B', '500M', '7B parameters'.
+    Returns absolute parameter count as int.
+    """
+    if v is None:
+        return None
+    if isinstance(v, (int, float)):
+        try:
+            return int(v)
+        except Exception:
+            return None
+    s = str(v).strip().lower().replace(",", "").replace("_", "")
+    m = re.search(r"([\d\.]+)\s*([kmb])?", s)
+    if not m:
+        return None
+    num = float(m.group(1))
+    unit = m.group(2)
+    mult = 1
+    if unit == "k":
+        mult = 1_000
+    elif unit == "m":
+        mult = 1_000_000
+    elif unit == "b":
+        mult = 1_000_000_000
+    try:
+        return int(num * mult)
+    except Exception:
+        return None
+
+def _pick_params_from_mapping(d: dict) -> Optional[int]:
+    for k, v in (d or {}).items():
+        if _norm_key(k) in _PARAM_KEY_ALIASES:
+            n = _parse_params_value(v)
+            if n is not None:
+                return n
+    return None
+
 def get_num_parameters(repo_id: str, api: HfApi) -> Optional[int]:
-    # Try config.json keys
+    # 1) Try config.json
     cfg = load_config_json(repo_id)
-    if cfg:
-        for k in ("n_parameters", "num_parameters", "model_size", "params"):
-            if k in cfg:
-                try:
-                    return int(cfg[k])
-                except Exception:
-                    pass
-    # Fallback: model card metadata (cardData)
+    n = _pick_params_from_mapping(cfg) if cfg else None
+    if n is not None:
+        return n
+    # 2) Fallback: model card metadata (cardData)
     try:
         mi = api.model_info(repo_id)
         card = getattr(mi, "cardData", None) or {}
-        for k in ("n_parameters", "num_parameters", "model_size", "params"):
-            if k in card:
-                try:
-                    return int(card[k])
-                except Exception:
-                    continue
+        n = _pick_params_from_mapping(card)
+        if n is not None:
+            return n
     except Exception:
         pass
     return None
-
-def parse_human_num(s: str) -> int:
-    """Accept 100_000, '100k', '2M', etc."""
-    s = s.strip().lower().replace("_", "")
-    if s.endswith("k"):
-        return int(float(s[:-1]) * 1_000)
-    if s.endswith("m"):
-        return int(float(s[:-1]) * 1_000_000)
-    return int(s)
 
 # ---------------------- core crawler ----------------------
 
 def find_base_models(api: HfApi, min_downloads: int, limit_per_query: int) -> List[str]:
     """
-    Enumerate popular base models by several broad queries. Post-filter by downloads.
-    We deliberately skip quant repos (gguf/gptq/awq/exl2) at this stage.
+    Enumerate popular base models (skip repos that look quantized),
+    and keep those with downloads >= min_downloads.
     """
     queries = [
         "instruct", "llama", "mistral", "mixtral", "qwen", "gemma", "phi",
@@ -155,7 +211,6 @@ def find_base_models(api: HfApi, min_downloads: int, limit_per_query: int) -> Li
         try:
             models = api.list_models(search=q, limit=limit_per_query)
         except TypeError:
-            # older hub versions may not accept search param
             models = api.list_models(limit=limit_per_query)
             models = [m for m in models if q.lower() in m.modelId.lower()]
         for m in models:
@@ -170,13 +225,13 @@ def find_base_models(api: HfApi, min_downloads: int, limit_per_query: int) -> Li
                 bases.append(rid)
     return sorted(bases)
 
-def discover_quant_forks(api: HfApi, base_repo_id: str, limit: int = 60) -> List[Tuple[str, int, List[str]]]:
+def discover_quant_forks(api: HfApi, base_repo_id: str, limit: int = 80) -> List[Tuple[str, int, List[str]]]:
     """
     For a base model, search for common quant forks by name. Return list of:
     (repo_id, downloads, [formats])
     """
     base_name = base_repo_id.split("/")[-1]
-    results = {}
+    results: Dict[str, Tuple[str, int, List[str]]] = {}
     for fmt in QUANT_PATTERNS.keys():
         q = f"{base_name} {fmt}"
         try:
@@ -186,7 +241,6 @@ def discover_quant_forks(api: HfApi, base_repo_id: str, limit: int = 60) -> List
             models = [m for m in models if base_name.lower() in m.modelId.lower() and fmt in m.modelId.lower()]
         for m in models:
             rid = m.modelId
-            # Avoid counting the base itself; keep only “forkish” repos
             if rid == base_repo_id:
                 continue
             dl = safe_get_downloads(m)
@@ -195,33 +249,28 @@ def discover_quant_forks(api: HfApi, base_repo_id: str, limit: int = 60) -> List
                 continue
             prev = results.get(rid)
             if prev:
-                # Merge formats; keep max downloads we’ve seen for that repo id
-                prev_fmts = set(prev[2]) | set(fmts)
-                results[rid] = (rid, max(prev[1], dl), sorted(prev_fmts))
+                prev_fmts = sorted(set(prev[2]) | set(fmts))
+                results[rid] = (rid, max(prev[1], dl), prev_fmts)
             else:
                 results[rid] = (rid, dl, fmts)
     return list(results.values())
 
-def crawl(
+def crawl_models(
     min_downloads: int = 100_000,
-    quant_min_downloads: int = 0,
+    quant_min_downloads: int = 5_000,
     limit_per_query: int = 200,
-    sleep_s: float = 0.2,
-    download: str = "none",
-    dst: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
-    Crawl HF Hub for base models with downloads >= min_downloads.
-    Discover quantized forks and compute min quant downloads.
-    Optionally download base and/or quant repos.
+    Crawl HF for base models and qualifying quant forks.
 
-    download: "none" | "base" | "quant" | "base,quant"
+    Returns JSON with ONLY:
+      name, type, family, source, params, quantizations
     """
     api = HfApi()
     base_ids = find_base_models(api, min_downloads, limit_per_query)
-
     out_models = []
-    for i, rid in enumerate(base_ids, 1):
+
+    for rid in base_ids:
         try:
             info = api.model_info(rid)
         except HfHubHTTPError:
@@ -236,78 +285,50 @@ def crawl(
             "family": None,
             "source": rid.split("/")[0] if "/" in rid else "unknown",
             "params": None,
-            "downloads": safe_get_downloads(info),
             "quantizations": [],
-            "quant_min_downloads": None,
         }
 
-        # family + params for base
+        # family + params (base only)
         cfg = load_config_json(rid)
         if cfg:
             entry["family"] = infer_family_from_model_type(cfg.get("model_type"))
         entry["params"] = get_num_parameters(rid, api)
 
-        # quantized forks with their downloads
+        # discover quant forks; keep only those meeting quant_min_downloads
         qforks = discover_quant_forks(api, rid, limit=80)
-        # filter by quant_min_downloads threshold
         qforks = [q for q in qforks if q[1] >= quant_min_downloads]
         if qforks:
-            entry["quant_min_downloads"] = int(min(dl for _, dl, _ in qforks))
             entry["quantizations"] = [
-                {"repo": qid, "downloads": int(dl), "formats": fmts, "params": entry["params"]}
-                for (qid, dl, fmts) in qforks
+                {"repo": qid, "formats": fmts} for (qid, _dl, fmts) in qforks
             ]
-            # add BitsAndBytes hints for encoders/enc-decoders (no separate repo)
-            if entry["type"] in {"encoder", "encoder-decoder"}:
-                entry["quantizations"].extend([
-                    {"format": "bitsandbytes", "bits": 8, "method": "int8", "params": entry["params"]},
-                    {"format": "bitsandbytes", "bits": 4, "method": "nf4", "params": entry["params"]},
-                ])
 
         out_models.append(entry)
 
-        # polite pacing (avoid rate limits)
-        if sleep_s:
-            time.sleep(sleep_s)
-
-        # Optional download
-        dl_modes = {m.strip() for m in (download or "none").split(",")}
-        try:
-            if dst and ("base" in dl_modes or "quant" in dl_modes):
-                if "base" in dl_modes:
-                    snapshot_download(repo_id=rid, local_dir=dst, repo_type="model", ignore_patterns=["*.md"])
-                if "quant" in dl_modes:
-                    for qid, _, _ in qforks:
-                        snapshot_download(repo_id=qid, local_dir=dst, repo_type="model", ignore_patterns=["*.md"])
-        except Exception:
-            # ignore download errors; keep metadata
-            pass
-
-    return {"generated_at": datetime.now(timezone.utc).isoformat(), "count": len(out_models), "models": out_models}
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(out_models),
+        "models": out_models,
+    }
 
 # ---------------------- CLI ----------------------
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--out", default="models_popular.json", help="Output JSON path")
-    p.add_argument("--min-downloads", default="100_000", help="Base model minimum downloads (int, '50k', '2M', etc.)")
-    p.add_argument("--quant-min-downloads", default="0", help="Quantized repo minimum downloads (int, '10k', etc.)")
+    p.add_argument("--out", default="models.json", help="Output JSON path")
+    p.add_argument("--min-downloads", default="100_000",
+                   help="Base model minimum downloads (int, '50k', '2M', etc.)")
+    p.add_argument("--quant-min-downloads", default="5_000",
+                   help="Quantized repo minimum downloads (int, '5k', etc.)")
     p.add_argument("--limit", type=int, default=200, help="Per-query search limit (HF API)")
-    p.add_argument("--sleep", type=float, default=0.2, help="Sleep between model requests (seconds)")
-    p.add_argument("--download", default="none", help="What to download: none|base|quant|base,quant")
-    p.add_argument("--dst", default=None, help="Directory to download repos into (used if --download != none)")
     args = p.parse_args()
 
     min_dl = parse_human_num(args.min_downloads)
     qmin_dl = parse_human_num(args.quant_min_downloads)
 
-    data = crawl(
+    data = crawl_models(
         min_downloads=min_dl,
         quant_min_downloads=qmin_dl,
         limit_per_query=args.limit,
-        sleep_s=args.sleep,
-        download=args.download,
-        dst=args.dst,
     )
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
