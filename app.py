@@ -3,22 +3,21 @@ import json
 import pandas as pd
 import os
 
-from core.task_config import (
-    get_available_tasks, get_task_param_blocks, get_task_parameters,
-    get_task_description, get_task_icon
-)
+from core.config_manager import ConfigManager
 from utils.ui import aggrid_model_picker, create_preprocessing_table, create_encoding_table, create_decoding_table
 
-# --- Load models from JSON
-config_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
-with open(os.path.join(config_dir, "models.json")) as f:
-    models_json = json.load(f)
-all_models = (
-    models_json.get("ENCODER_ONLY_MODELS", []) +
-    models_json.get("DECODER_ONLY_MODELS", []) +
-    models_json.get("ENCODER_DECODER_MODELS", [])
-)
-models_df = pd.DataFrame(all_models)
+# --- Initialize configuration manager ---
+config_manager = ConfigManager()
+
+# --- Load models from new config structure ---
+encoder_models = config_manager.get_encoder_models()
+decoder_models = config_manager.get_decoder_models()
+encoder_decoder_models = config_manager.get_encoder_decoder_models()
+
+# Create DataFrames for model selection
+encoder_df = pd.DataFrame(encoder_models) if encoder_models else pd.DataFrame()
+decoder_df = pd.DataFrame(decoder_models) if decoder_models else pd.DataFrame()
+encoder_decoder_df = pd.DataFrame(encoder_decoder_models) if encoder_decoder_models else pd.DataFrame()
 
 st.set_page_config(page_title="🧠 GenAI Playground", layout="wide")
 st.title("🧠 GenAI Playground")
@@ -26,47 +25,48 @@ st.title("🧠 GenAI Playground")
 # --- Sidebar with task selection ---
 with st.sidebar:
     st.markdown("## 🎯 Task Selection")
-    tasks = get_available_tasks()
+    tasks = config_manager.get_available_tasks()
     task = st.selectbox("Choose Task", tasks)
 
 # --- Main content area ---
-st.markdown(f"### {get_task_icon(task)} {task}")
-st.write(get_task_description(task))
-
-# --- Model selection widgets based on task ---
-encoder_models = [m for m in models_json.get('ENCODER_ONLY_MODELS', [])]
-decoder_models = [m for m in models_json.get('DECODER_ONLY_MODELS', [])]
-encoder_decoder_models = [m for m in models_json.get('ENCODER_DECODER_MODELS', [])]
+st.markdown(f"### {config_manager.get_task_icon(task)} {task}")
+st.write(config_manager.get_task_description(task))
 
 selected_encoder = selected_decoder = selected_encoder_decoder = None
 
 # Get task configuration dynamically
-task_blocks = get_task_param_blocks(task)
+task_blocks = config_manager.get_task_blocks(task)
 
 # --- Model selection based on task blocks ---
 if "encoding" in task_blocks and "decoding" in task_blocks:
     # Tasks that need separate encoder and decoder (like RAG-based QA)
-    st.subheader("Select an Encoder Model")
-    encoder_df = pd.DataFrame(encoder_models)
-    selected_encoder = aggrid_model_picker(encoder_df, key="aggrid_encoder_model_picker")
-    if selected_encoder:
-        st.success(f"Selected encoder: {selected_encoder['name']}")
-        st.write(selected_encoder)
+    if not encoder_df.empty:
+        st.subheader("Select an Encoder Model")
+        selected_encoder = aggrid_model_picker(encoder_df, key="aggrid_encoder_model_picker")
+        if selected_encoder:
+            st.success(f"Selected encoder: {selected_encoder['name']}")
+            st.write(selected_encoder)
+    else:
+        st.warning("No encoder models available in configuration.")
 
-    st.subheader("Select a Decoder Model")
-    decoder_df = pd.DataFrame(decoder_models)
-    selected_decoder = aggrid_model_picker(decoder_df, key="aggrid_decoder_model_picker")
-    if selected_decoder:
-        st.success(f"Selected decoder: {selected_decoder['name']}")
-        st.write(selected_decoder)
+    if not decoder_df.empty:
+        st.subheader("Select a Decoder Model")
+        selected_decoder = aggrid_model_picker(decoder_df, key="aggrid_decoder_model_picker")
+        if selected_decoder:
+            st.success(f"Selected decoder: {selected_decoder['name']}")
+            st.write(selected_decoder)
+    else:
+        st.warning("No decoder models available in configuration.")
 else:
     # Tasks that use encoder-decoder models (like Normal QA and Summarisation)
-    st.subheader("Select an Encoder-Decoder Model")
-    encoder_decoder_df = pd.DataFrame(encoder_decoder_models)
-    selected_encoder_decoder = aggrid_model_picker(encoder_decoder_df, key="aggrid_encoder_decoder_model_picker")
-    if selected_encoder_decoder:
-        st.success(f"Selected encoder-decoder: {selected_encoder_decoder['name']}")
-        st.write(selected_encoder_decoder)
+    if not encoder_decoder_df.empty:
+        st.subheader("Select an Encoder-Decoder Model")
+        selected_encoder_decoder = aggrid_model_picker(encoder_decoder_df, key="aggrid_encoder_decoder_model_picker")
+        if selected_encoder_decoder:
+            st.success(f"Selected encoder-decoder: {selected_encoder_decoder['name']}")
+            st.write(selected_encoder_decoder)
+    else:
+        st.warning("No encoder-decoder models available in configuration.")
 
 # --- Parameter configuration section ---
 st.markdown("---")
@@ -88,7 +88,7 @@ if task_blocks:
         
         for i, block in enumerate(task_blocks):
             param_type = f"{block}_parameters"
-            params = get_task_parameters(task, param_type)
+            params = config_manager.get_task_parameters(task, param_type)
             
             if params:
                 with tabs[i]:
@@ -121,14 +121,20 @@ st.markdown("---")
 def execute_task(task_name, **kwargs):
     """Execute the selected task with the given parameters."""
     from core.task_orchestrator import TaskOrchestrator
-    orchestrator = TaskOrchestrator(models_json)
+    # Create a models config dict for backward compatibility
+    models_config = {
+        "ENCODER_ONLY_MODELS": encoder_models,
+        "DECODER_ONLY_MODELS": decoder_models,
+        "ENCODER_DECODER_MODELS": encoder_decoder_models
+    }
+    orchestrator = TaskOrchestrator(models_config)
     
     if task_name == "RAG-based QA":
         return orchestrator.run_rag_qa(**kwargs)
-    elif task_name == "Normal QA":
-        return orchestrator.run_qa(**kwargs)
-    elif task_name == "Summarisation":
+    elif task_name == "Abstractive Summarization":
         return orchestrator.run_summarisation(**kwargs)
+    elif task_name == "Question Answering":
+        return orchestrator.run_qa(**kwargs)
     else:
         raise ValueError(f"Unknown task: {task_name}")
 
@@ -163,30 +169,7 @@ if task == "RAG-based QA":
                 st.success("Answer:")
                 st.write(answer)
 
-elif task == "Normal QA":
-    st.subheader("User Query")
-    user_query = query_input_box(label="Enter your question:", key="qa_query")
-    
-    run_clicked = st.button("Run Normal QA")
-    if run_clicked:
-        if not selected_encoder_decoder:
-            st.error("Please select an encoder-decoder model.")
-        elif not user_query:
-            st.error("Please enter a question.")
-        else:
-            with st.spinner("Running Normal QA..."):
-                kwargs = {
-                    "model_name": selected_encoder_decoder['name'],
-                    "query": user_query,
-                    "encoding_params": encoding_params if 'encoding_params' in locals() else {},
-                    "decoding_params": decoding_params if 'decoding_params' in locals() else {},
-                    "preprocessing_config": preprocessing_params if 'preprocessing_params' in locals() else {}
-                }
-                answer = execute_task(task, **kwargs)
-                st.success("Answer:")
-                st.write(answer)
-
-elif task == "Summarisation":
+elif task == "Abstractive Summarization":
     st.subheader("Text to Summarize")
     input_text = query_input_box(label="Enter text to summarize:", key="summarize_text")
     
@@ -208,3 +191,29 @@ elif task == "Summarisation":
                 summary = execute_task(task, **kwargs)
                 st.success("Summary:")
                 st.write(summary)
+
+elif task == "Question Answering":
+    st.subheader("User Query")
+    user_query = query_input_box(label="Enter your question:", key="qa_query")
+    
+    run_clicked = st.button("Run Question Answering")
+    if run_clicked:
+        if not selected_encoder_decoder:
+            st.error("Please select an encoder-decoder model.")
+        elif not user_query:
+            st.error("Please enter a question.")
+        else:
+            with st.spinner("Running Question Answering..."):
+                kwargs = {
+                    "model_name": selected_encoder_decoder['name'],
+                    "query": user_query,
+                    "encoding_params": encoding_params if 'encoding_params' in locals() else {},
+                    "decoding_params": decoding_params if 'decoding_params' in locals() else {},
+                    "preprocessing_config": preprocessing_params if 'preprocessing_params' in locals() else {}
+                }
+                answer = execute_task(task, **kwargs)
+                st.success("Answer:")
+                st.write(answer)
+
+else:
+    st.info(f"Task '{task}' is not yet implemented. Please select a supported task.")
