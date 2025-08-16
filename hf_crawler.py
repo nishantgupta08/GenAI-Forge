@@ -3,9 +3,10 @@
 """
 Hugging Face crawler:
 - Collect base (non-quantized) models with downloads >= threshold (default 100_000)
-- Extract ONLY: name, type (encoder/decoder/encoder-decoder), family (from config.model_type), params (num parameters)
+- Extract ONLY: name, type (encoder/decoder/encoder-decoder), family (from config.model_type),
+  params (num parameters), downloads (base)
 - Discover quantized forks (gguf/gptq/awq/exl2) and keep ONLY those with downloads >= quant_min_downloads (default 5_000)
-- Output does NOT include any downloads; quantization entries have NO params
+- Output includes downloads for base and for each quantized repo
 
 Usage:
   python hf_crawler_min.py --out models.json
@@ -257,14 +258,15 @@ def discover_quant_forks(api: HfApi, base_repo_id: str, limit: int = 80) -> List
 
 def crawl_models(
     min_downloads: int = 100_000,
-    quant_min_downloads: int = 5_000,
+    quant_min_downloads: int = 10_000,
     limit_per_query: int = 200,
 ) -> Dict[str, Any]:
     """
     Crawl HF for base models and qualifying quant forks.
 
-    Returns JSON with ONLY:
-      name, type, family, source, params, quantizations
+    Returns JSON with:
+      name, type, family, source, params, downloads, quant_min_downloads, quantizations[]
+      where each quantization has: repo, formats, downloads
     """
     api = HfApi()
     base_ids = find_base_models(api, min_downloads, limit_per_query)
@@ -279,12 +281,16 @@ def crawl_models(
             continue
 
         tags = getattr(info, "tags", None) or []
+        base_downloads = safe_get_downloads(info)
+
         entry: Dict[str, Any] = {
             "name": rid,
             "type": arch_type_from_tags(tags),
             "family": None,
             "source": rid.split("/")[0] if "/" in rid else "unknown",
             "params": None,
+            "downloads": base_downloads,
+            "quant_min_downloads": None,
             "quantizations": [],
         }
 
@@ -298,8 +304,10 @@ def crawl_models(
         qforks = discover_quant_forks(api, rid, limit=80)
         qforks = [q for q in qforks if q[1] >= quant_min_downloads]
         if qforks:
+            entry["quant_min_downloads"] = int(min(dl for _, dl, _ in qforks))
             entry["quantizations"] = [
-                {"repo": qid, "formats": fmts} for (qid, _dl, fmts) in qforks
+                {"repo": qid, "formats": fmts, "downloads": int(dl)}
+                for (qid, dl, fmts) in qforks
             ]
 
         out_models.append(entry)
@@ -314,10 +322,10 @@ def crawl_models(
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--out", default="models_config.json", help="Output JSON path")
+    p.add_argument("--out", default="models.json", help="Output JSON path")
     p.add_argument("--min-downloads", default="100_000",
                    help="Base model minimum downloads (int, '50k', '2M', etc.)")
-    p.add_argument("--quant-min-downloads", default="500",
+    p.add_argument("--quant-min-downloads", default="5_000",
                    help="Quantized repo minimum downloads (int, '5k', etc.)")
     p.add_argument("--limit", type=int, default=200, help="Per-query search limit (HF API)")
     args = p.parse_args()
