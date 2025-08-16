@@ -18,4 +18,4 @@ from .task_config import (
     DECODER_ONLY_MODELS,
     ENCODER_DECODER_MODELS
 )
-from .document_utils import create_documents_from_chunks, get_text_from_file 
+from utils.document_utils import create_documents_from_chunks, get_text_from_file 

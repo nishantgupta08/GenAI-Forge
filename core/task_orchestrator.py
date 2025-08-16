@@ -6,7 +6,7 @@ Orchestrates task execution for RAG QA, Normal QA, and Summarisation using loade
 
 from langchain.chains import RetrievalQA
 from core.vectorstore import VectorStoreBuilder
-from .document_utils import get_text_from_file, create_documents_from_chunks
+from utils.document_utils import get_text_from_file, create_documents_from_chunks
 from components.encoder import LangchainEncoder
 from components.decoder import LangchainDecoder
 from components.encoder_decoder import LangchainEncoderDecoder
