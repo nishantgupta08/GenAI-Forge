@@ -1,0 +1,378 @@
+{
+    "RAG-based QA": {
+      "blocks": ["preprocessing", "encoding", "decoding"],
+      "description": "Retrieval-Augmented Generation for question answering using document context",
+      "overrides": {
+        "preprocessing": {
+          "splitter_type": {
+            "ideal": "sentence",
+            "ideal_value_reason": "Sentence-level chunks preserve semantic units for retrieval."
+          },
+          "chunk_size": {
+            "ideal": 800,
+            "ideal_value_reason": "Large enough to retain context; small enough for fast retrieval."
+          },
+          "chunk_overlap": {
+            "ideal": 150,
+            "ideal_value_reason": "Overlap reduces boundary truncation of facts across chunks."
+          },
+          "preserve_structure": {
+            "ideal": true,
+            "ideal_value_reason": "Keeps headings/paragraphs intact for better grounding."
+          },
+          "clean_text": {
+            "ideal": true,
+            "ideal_value_reason": "Removes noise that hurts embedding quality."
+          },
+          "enhance_retrieval": {
+            "ideal": true,
+            "ideal_value_reason": "Optimizes chunk metadata (titles, anchors) for search."
+          }
+        },
+        "encoding": {
+          "pooling": {
+            "ideal": "cls",
+            "ideal_value_reason": "CLS often works well for passage/query embeddings in retrieval models."
+          },
+          "normalize": {
+            "ideal": "l2",
+            "ideal_value_reason": "Cosine similarity assumes normalized vectors; improves retrieval ranking."
+          },
+          "max_length": {
+            "ideal": 1024,
+            "ideal_value_reason": "Balances context retention with encoder cost."
+          },
+          "fp16": {
+            "ideal": true,
+            "ideal_value_reason": "Halves memory bandwidth; good for large corpora on GPU."
+          }
+        },
+        "decoding": {
+          "temperature": {
+            "ideal": 0.2,
+            "ideal_value_reason": "Low randomness reduces hallucinations for factual QA."
+          },
+          "do_sample": {
+            "ideal": false,
+            "ideal_value_reason": "Greedy/beam favors faithful, grounded answers."
+          },
+          "num_beams": {
+            "ideal": 1,
+            "ideal_value_reason": "Greedy is usually sufficient when grounded by retrieved context."
+          },
+          "max_new_tokens": {
+            "ideal": 256,
+            "ideal_value_reason": "Allows full answers with citations without runaway length."
+          },
+          "no_repeat_ngram_size": {
+            "ideal": 3,
+            "ideal_value_reason": "Prevents phrase repetition in long answers."
+          },
+          "repetition_penalty": {
+            "ideal": 1.05,
+            "ideal_value_reason": "Light penalty to discourage loops without harming precision."
+          }
+        }
+      }
+    },
+  
+    "Abstractive Summarization": {
+      "blocks": ["preprocessing", "encoding", "decoding"],
+      "description": "Produce concise summaries from long text",
+      "overrides": {
+        "preprocessing": {
+          "splitter_type": {
+            "ideal": "recursive",
+            "ideal_value_reason": "Respects document structure (sections, paragraphs) for coherence."
+          },
+          "chunk_size": {
+            "ideal": 2000,
+            "ideal_value_reason": "Longer chunks preserve narrative; fewer cross-chunk dependencies."
+          },
+          "chunk_overlap": {
+            "ideal": 200,
+            "ideal_value_reason": "Maintains continuity across chunk boundaries."
+          },
+          "preserve_structure": {
+            "ideal": true,
+            "ideal_value_reason": "Summaries benefit from section cues."
+          }
+        },
+        "encoding": {
+          "max_length": {
+            "ideal": 2048,
+            "ideal_value_reason": "Feeds more context to seq2seq models like T5/BART/LED."
+          },
+          "truncation": {
+            "ideal": true,
+            "ideal_value_reason": "Avoids overflow; pairs with chunking."
+          }
+        },
+        "decoding": {
+          "num_beams": {
+            "ideal": 4,
+            "ideal_value_reason": "Beam search improves factual coverage and fluency."
+          },
+          "length_penalty": {
+            "ideal": 1.2,
+            "ideal_value_reason": "Encourages concise summaries over verbose outputs."
+          },
+          "do_sample": {
+            "ideal": false,
+            "ideal_value_reason": "Deterministic summaries are preferred in production."
+          },
+          "min_length": {
+            "ideal": 40,
+            "ideal_value_reason": "Prevents overly short summaries."
+          },
+          "max_new_tokens": {
+            "ideal": 200,
+            "ideal_value_reason": "Caps length while allowing multi-sentence abstracts."
+          },
+          "no_repeat_ngram_size": {
+            "ideal": 3,
+            "ideal_value_reason": "Reduces redundancy."
+          },
+          "temperature": {
+            "ideal": 0.3,
+            "ideal_value_reason": "A touch of diversity without hallucination risk."
+          }
+        }
+      }
+    },
+  
+    "Document Embedding (Retrieval Indexing)": {
+      "blocks": ["preprocessing", "encoding"],
+      "description": "Generate robust embeddings for search and retrieval",
+      "overrides": {
+        "preprocessing": {
+          "splitter_type": {
+            "ideal": "sentence",
+            "ideal_value_reason": "Sentence chunks improve recall and reduce noise."
+          },
+          "chunk_size": {
+            "ideal": 1000,
+            "ideal_value_reason": "Good trade-off for index quality vs. storage."
+          },
+          "chunk_overlap": {
+            "ideal": 100,
+            "ideal_value_reason": "Mitigates boundary information loss."
+          },
+          "enhance_retrieval": {
+            "ideal": true,
+            "ideal_value_reason": "Adds titles/keywords to metadata for better ranking."
+          }
+        },
+        "encoding": {
+          "pooling": {
+            "ideal": "mean",
+            "ideal_value_reason": "Stable choice for many SBERT-like encoders."
+          },
+          "normalize": {
+            "ideal": "l2",
+            "ideal_value_reason": "Cosine-friendly embeddings for vector search."
+          },
+          "batch_size": {
+            "ideal": 128,
+            "ideal_value_reason": "High throughput on GPUs during bulk indexing."
+          },
+          "max_length": {
+            "ideal": 1024,
+            "ideal_value_reason": "Covers most paragraphs without heavy truncation."
+          },
+          "fp16": {
+            "ideal": true,
+            "ideal_value_reason": "Throughput and memory efficiency on GPU."
+          }
+        }
+      }
+    },
+  
+    "Text Classification (Prompted)": {
+      "blocks": ["preprocessing", "encoding", "decoding"],
+      "description": "Zero-/few-shot prompted classification with an LLM",
+      "overrides": {
+        "preprocessing": {
+          "clean_text": {
+            "ideal": true,
+            "ideal_value_reason": "Reduces spurious tokens that confuse prompts."
+          }
+        },
+        "encoding": {
+          "max_length": {
+            "ideal": 512,
+            "ideal_value_reason": "Most classification prompts fit within 512 tokens."
+          }
+        },
+        "decoding": {
+          "temperature": {
+            "ideal": 0.0,
+            "ideal_value_reason": "Deterministic label outputs."
+          },
+          "do_sample": {
+            "ideal": false,
+            "ideal_value_reason": "Avoids random label drift."
+          },
+          "max_new_tokens": {
+            "ideal": 16,
+            "ideal_value_reason": "Short categorical outputs."
+          },
+          "no_repeat_ngram_size": {
+            "ideal": 2,
+            "ideal_value_reason": "Prevents minor repetition in label text."
+          }
+        }
+      }
+    },
+  
+    "Multi-label Classification (Prompted)": {
+      "blocks": ["preprocessing", "encoding", "decoding"],
+      "description": "Predict multiple applicable labels via instruction prompting",
+      "overrides": {
+        "encoding": {
+          "max_length": {
+            "ideal": 768,
+            "ideal_value_reason": "Allows longer context or candidate label lists."
+          }
+        },
+        "decoding": {
+          "temperature": {
+            "ideal": 0.1,
+            "ideal_value_reason": "Low randomness for stable set outputs."
+          },
+          "do_sample": {
+            "ideal": false,
+            "ideal_value_reason": "Reproducible tags across runs."
+          },
+          "max_new_tokens": {
+            "ideal": 32,
+            "ideal_value_reason": "Space for multiple comma-separated labels."
+          },
+          "repetition_penalty": {
+            "ideal": 1.1,
+            "ideal_value_reason": "Discourages duplicate labels."
+          }
+        }
+      }
+    },
+  
+    "Conversational Chatbot": {
+      "blocks": ["encoding", "decoding"],
+      "description": "Open-domain assistant responses with natural tone",
+      "overrides": {
+        "encoding": {
+          "max_length": {
+            "ideal": 2048,
+            "ideal_value_reason": "Retains longer conversation history."
+          }
+        },
+        "decoding": {
+          "temperature": {
+            "ideal": 0.7,
+            "ideal_value_reason": "Balanced creativity and coherence."
+          },
+          "top_p": {
+            "ideal": 0.9,
+            "ideal_value_reason": "Nucleus sampling for diverse yet relevant replies."
+          },
+          "do_sample": {
+            "ideal": true,
+            "ideal_value_reason": "Conversational variety and engagement."
+          },
+          "repetition_penalty": {
+            "ideal": 1.05,
+            "ideal_value_reason": "Reduces loops without harming flow."
+          },
+          "max_new_tokens": {
+            "ideal": 256,
+            "ideal_value_reason": "Room for multi-turn style answers."
+          }
+        }
+      }
+    },
+  
+    "Translation": {
+      "blocks": ["encoding", "decoding"],
+      "description": "Deterministic machine translation prompts",
+      "overrides": {
+        "encoding": {
+          "tokenizer": {
+            "ideal": "fast",
+            "ideal_value_reason": "Fast tokenization across large corpora."
+          },
+          "special_tokens": {
+            "ideal": true,
+            "ideal_value_reason": "Seq2seq models rely on special tokens."
+          },
+          "max_length": {
+            "ideal": 1024,
+            "ideal_value_reason": "Handles long sentences/paragraphs."
+          }
+        },
+        "decoding": {
+          "temperature": {
+            "ideal": 0.0,
+            "ideal_value_reason": "Deterministic, faithful translations."
+          },
+          "do_sample": {
+            "ideal": false,
+            "ideal_value_reason": "Avoids random lexical choices."
+          },
+          "num_beams": {
+            "ideal": 5,
+            "ideal_value_reason": "Improves adequacy/fluency over greedy."
+          },
+          "length_penalty": {
+            "ideal": 1.0,
+            "ideal_value_reason": "Neutral length preference for MT."
+          },
+          "max_new_tokens": {
+            "ideal": 200,
+            "ideal_value_reason": "Supports long sentences without truncation."
+          }
+        }
+      }
+    },
+  
+    "Structured Data Extraction": {
+      "blocks": ["preprocessing", "encoding", "decoding"],
+      "description": "JSON/field-level extraction from unstructured text",
+      "overrides": {
+        "preprocessing": {
+          "clean_text": {
+            "ideal": true,
+            "ideal_value_reason": "Reduces parsing errors from noise characters."
+          },
+          "remove_special_chars": {
+            "ideal": false,
+            "ideal_value_reason": "Preserve punctuation that carries meaning (e.g., dates, IDs)."
+          }
+        },
+        "encoding": {
+          "max_length": {
+            "ideal": 1024,
+            "ideal_value_reason": "Fits prompt + schema instructions."
+          }
+        },
+        "decoding": {
+          "temperature": {
+            "ideal": 0.1,
+            "ideal_value_reason": "Stability for schema-conformant outputs."
+          },
+          "do_sample": {
+            "ideal": false,
+            "ideal_value_reason": "Reduces variability; easier to parse."
+          },
+          "max_new_tokens": {
+            "ideal": 128,
+            "ideal_value_reason": "Typical for short JSON fields."
+          },
+          "no_repeat_ngram_size": {
+            "ideal": 3,
+            "ideal_value_reason": "Prevents duplicated key sections."
+          }
+        }
+      }
+    }
+  }
+  

@@ -1,0 +1,728 @@
+{
+  "encoding_parameters": {
+    "pooling": {
+      "name": "Pooling Strategy",
+      "label": "Pooling Strategy",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "mean",
+        "max",
+        "cls",
+        "sum",
+        "attention",
+        "last"
+      ],
+      "description": "Different methods to combine token embeddings into a single vector representation",
+      "info": "How to pool token embeddings into a single vector representation.",
+      "options_details": {
+        "mean": {
+          "name": "Mean Pooling",
+          "description": "Takes the average of all token embeddings in the sequence",
+          "mathematical_definition": "output = (1/n) * Σ(token_embeddings)",
+          "use_cases": [
+            "Document similarity and retrieval",
+            "General-purpose embeddings",
+            "When you want balanced representation"
+          ],
+          "advantages": [
+            "Handles variable sequence lengths well",
+            "Provides balanced representation",
+            "Computationally efficient",
+            "Works well for most NLP tasks"
+          ],
+          "disadvantages": [
+            "May dilute important tokens",
+            "Can lose fine-grained information",
+            "Not optimal for classification tasks"
+          ],
+          "recommended_for": [
+            "Semantic search",
+            "Document clustering",
+            "General text embeddings"
+          ],
+          "not_recommended_for": [
+            "Classification tasks",
+            "When specific tokens are crucial"
+          ]
+        },
+        "max": {
+          "name": "Max Pooling",
+          "description": "Takes the element-wise maximum across all token embeddings",
+          "mathematical_definition": "output[i] = max(token_embeddings[:, i])",
+          "use_cases": [
+            "Sentiment analysis",
+            "Key phrase detection",
+            "Classification tasks"
+          ],
+          "advantages": [
+            "Preserves strongest features",
+            "Good for classification",
+            "Captures important signals"
+          ],
+          "disadvantages": [
+            "May lose context",
+            "Sensitive to outliers",
+            "Can ignore important but subtle features"
+          ],
+          "recommended_for": [
+            "Binary classification",
+            "Sentiment analysis",
+            "Feature extraction"
+          ],
+          "not_recommended_for": [
+            "Semantic similarity",
+            "When context matters"
+          ]
+        },
+        "cls": {
+          "name": "CLS Token Pooling",
+          "description": "Uses the [CLS] token embedding (classification token)",
+          "mathematical_definition": "output = cls_token_embedding",
+          "use_cases": [
+            "BERT/RoBERTa models",
+            "Classification tasks",
+            "Sentence-level tasks"
+          ],
+          "advantages": [
+            "Model-optimized for classification",
+            "Captures global context",
+            "Consistent representation"
+          ],
+          "disadvantages": [
+            "Only works with models that have CLS tokens",
+            "May not work with all architectures"
+          ],
+          "recommended_for": [
+            "BERT-based models",
+            "Classification tasks",
+            "Sentence-level embeddings"
+          ],
+          "not_recommended_for": [
+            "Non-BERT models",
+            "Token-level tasks"
+          ]
+        },
+        "sum": {
+          "name": "Sum Pooling",
+          "description": "Sums all token embeddings",
+          "mathematical_definition": "output = Σ(token_embeddings)",
+          "use_cases": [
+            "Short texts",
+            "When all tokens matter equally"
+          ],
+          "advantages": [
+            "Preserves all token contributions",
+            "Simple and fast"
+          ],
+          "disadvantages": [
+            "Sensitive to sequence length",
+            "May cause numerical overflow",
+            "Not normalized"
+          ],
+          "recommended_for": [
+            "Short sequences",
+            "When length is consistent"
+          ],
+          "not_recommended_for": [
+            "Variable length texts",
+            "Long sequences"
+          ]
+        },
+        "attention": {
+          "name": "Attention Pooling",
+          "description": "Weighted average using attention weights",
+          "mathematical_definition": "output = Σ(attention_weights * token_embeddings)",
+          "use_cases": [
+            "Question answering",
+            "When context matters",
+            "Complex reasoning tasks"
+          ],
+          "advantages": [
+            "Context-aware",
+            "Focuses on relevant parts",
+            "Interpretable"
+          ],
+          "disadvantages": [
+            "Computationally expensive",
+            "Requires attention mechanism",
+            "More complex"
+          ],
+          "recommended_for": [
+            "QA systems",
+            "When interpretability matters",
+            "Complex reasoning"
+          ],
+          "not_recommended_for": [
+            "Simple tasks",
+            "When speed is crucial"
+          ]
+        },
+        "last": {
+          "name": "Last Hidden State",
+          "description": "Uses the last hidden state from RNN/LSTM",
+          "mathematical_definition": "output = hidden_states[-1]",
+          "use_cases": [
+            "RNN/LSTM models",
+            "When sequence order matters"
+          ],
+          "advantages": [
+            "Captures sequential information",
+            "Simple implementation",
+            "Good for RNNs"
+          ],
+          "disadvantages": [
+            "May lose early context",
+            "Position-dependent",
+            "Not optimal for transformers"
+          ],
+          "recommended_for": [
+            "RNN/LSTM models",
+            "Sequential tasks",
+            "When order matters"
+          ],
+          "not_recommended_for": [
+            "Transformer models",
+            "When early context is important"
+          ]
+        }
+      },
+      "global_default": "mean"
+    },
+    "normalize": {
+      "name": "Normalization Methods",
+      "label": "Normalize Embeddings",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "l1",
+        "l2",
+        "none",
+        "z-score",
+        "min-max"
+      ],
+      "description": "Different methods to normalize embeddings for better similarity calculations",
+      "info": "Apply normalization to output embeddings. Recommended for cosine similarity. 'none' means no normalization. 'z-score' means standardize the embeddings to have a mean of 0 and a standard deviation of 1. 'min-max' means scale the embeddings to have a minimum of 0 and a maximum of 1. 'l1' means normalize the embeddings to have a sum of 1. 'l2' means normalize the embeddings to have a sum of 1.",
+      "options_details": {},
+      "global_default": "l2"
+    },
+    "device": {
+      "name": "Computing Device",
+      "label": "Device",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "description": "Hardware device to run the encoding process on",
+      "info": "Device to run encoding on: 'auto', 'cpu', 'cuda' (GPU), or 'mps' (Apple Silicon).",
+      "options_details": {},
+      "global_default": "auto"
+    },
+    "batch_size": {
+      "name": "Batch Size",
+      "label": "Batch Size",
+      "type": "dropdown",
+      "value_type": "int",
+      "options": [
+        1,
+        2,
+        4,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256
+      ],
+      "description": "Number of samples processed together in a single forward pass",
+      "info": "Higher is faster if enough memory.",
+      "recommended_values": {
+        "cpu": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "gpu_8gb": [
+          8,
+          16,
+          32
+        ],
+        "gpu_16gb": [
+          16,
+          32,
+          64
+        ],
+        "gpu_24gb+": [
+          64,
+          128,
+          256
+        ]
+      },
+      "global_default": 32
+    },
+    "fp16": {
+      "name": "Half Precision (FP16)",
+      "label": "Use FP16 Precision",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Use 16-bit floating point precision instead of 32-bit",
+      "info": "If true, use float16 for faster encoding on modern GPUs (CUDA or MPS).",
+      "global_default": true
+    },
+    "max_length": {
+      "name": "Maximum Sequence Length",
+      "label": "Maximum Sequence Length",
+      "type": "number",
+      "value_type": "int",
+      "min": 32,
+      "max": 4096,
+      "step": 8,
+      "description": "Maximum number of tokens allowed in a single input sequence",
+      "info": "Max tokens per input. Longer texts are truncated or chunked.",
+      "recommended_values": {
+        "bert": 512,
+        "roberta": 512,
+        "gpt2": 1024,
+        "t5": 512,
+        "longformer": 4096
+      },
+      "global_default": 1024
+    },
+    "truncation": {
+      "name": "Truncation Strategy",
+      "label": "Enable Truncation",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "How to handle sequences longer than max_length",
+      "info": "If true, inputs longer than max_length are truncated. Otherwise, error or auto-chunk.",
+      "global_default": true
+    },
+    "stride": {
+      "name": "Sliding Window Stride",
+      "label": "Sliding Window Stride",
+      "type": "number",
+      "value_type": "int",
+      "min": 0,
+      "max": 2048,
+      "step": 8,
+      "description": "Overlap between consecutive chunks when using sliding window",
+      "info": "Stride for sliding window chunking if truncation is off.",
+      "global_default": 256
+    },
+    "tokenizer": {
+      "name": "Tokenizer Implementation",
+      "label": "Tokenizer Type",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "default",
+        "fast",
+        "slow",
+        "custom"
+      ],
+      "description": "Different tokenizer implementations with varying speed/quality trade-offs",
+      "info": "Choose tokenizer implementation.",
+      "global_default": "fast"
+    },
+    "special_tokens": {
+      "name": "Special Tokens",
+      "label": "Use Special Tokens",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Whether to add model-specific special tokens (CLS, SEP, etc.)",
+      "info": "If true, adds special tokens (e.g. CLS, SEP) for BERT/Transformer models.",
+      "global_default": true
+    },
+    "return_tensors": {
+      "name": "Output Tensor Format",
+      "label": "Return Tensors Type",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "pt",
+        "np",
+        "tf"
+      ],
+      "description": "Format of the returned embeddings",
+      "info": "Output type: PyTorch ('pt'), NumPy ('np'), or TensorFlow ('tf').",
+      "global_default": "pt"
+    },
+    "output_hidden_states": {
+      "name": "Hidden States Output",
+      "label": "Return Hidden States",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Whether to return intermediate hidden states from all layers",
+      "info": "Whether to return all intermediate hidden states from the encoder.",
+      "global_default": false
+    },
+    "aggregation": {
+      "name": "Multi-Segment Aggregation",
+      "label": "Aggregation Type",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "none",
+        "mean",
+        "max",
+        "sum",
+        "attention"
+      ],
+      "description": "How to combine embeddings from multiple input segments",
+      "info": "Aggregation across multiple input segments (if input split).",
+      "global_default": "none"
+    }
+  },
+  "decoding_parameters": {
+    "temperature": {
+      "name": "Temperature",
+      "label": "Temperature",
+      "type": "slider",
+      "value_type": "float",
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.01,
+      "description": "Controls randomness in token selection. Higher values make output more random/creative",
+      "info": "Controls randomness. Higher = more diverse/creative.",
+      "global_default": 0.7
+    },
+    "top_k": {
+      "name": "Top-K Sampling",
+      "label": "Top-K",
+      "type": "slider",
+      "value_type": "int",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "description": "Sample only from the top K most likely tokens at each step",
+      "info": "Sample from top K tokens. 0 disables.",
+      "global_default": 50
+    },
+    "top_p": {
+      "name": "Nucleus Sampling (Top-p)",
+      "label": "Top-p (Nucleus Sampling)",
+      "type": "slider",
+      "value_type": "float",
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "description": "Sample from the smallest set of tokens whose cumulative probability exceeds p",
+      "info": "Sample from the smallest set of tokens whose total probability ≥ p.",
+      "global_default": 0.9
+    },
+    "repetition_penalty": {
+      "name": "Repetition Penalty",
+      "label": "Repetition Penalty",
+      "type": "slider",
+      "value_type": "float",
+      "min": 1.0,
+      "max": 2.5,
+      "step": 0.01,
+      "description": "Penalize tokens that have already been generated to reduce repetition",
+      "info": "Discourage model from repeating the same output. 1.0 means no penalty.",
+      "global_default": 1.05
+    },
+    "length_penalty": {
+      "name": "Length Penalty",
+      "label": "Length Penalty",
+      "type": "slider",
+      "value_type": "float",
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.01,
+      "description": "Control whether the model prefers shorter or longer outputs",
+      "info": "Controls whether model prefers shorter or longer output.",
+      "global_default": 1.0
+    },
+    "no_repeat_ngram_size": {
+      "name": "N-Gram Repetition Prevention",
+      "label": "No Repeat N-Gram Size",
+      "type": "slider",
+      "value_type": "int",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "description": "Prevent the model from repeating n-grams of specified size",
+      "info": "Model will not repeat any n-gram of this size.",
+      "global_default": 3
+    },
+    "max_length": {
+      "name": "Maximum Output Length",
+      "label": "Max Output Length",
+      "type": "slider",
+      "value_type": "int",
+      "min": 100,
+      "max": 4096,
+      "step": 8,
+      "description": "Maximum number of tokens to generate",
+      "info": "Maximum total length (input + output tokens). Use max_new_tokens for generation control.",
+      "global_default": 2048
+    },
+    "max_new_tokens": {
+      "name": "Max New Tokens",
+      "label": "Max New Tokens",
+      "type": "slider",
+      "value_type": "int",
+      "min": 16,
+      "max": 2048,
+      "step": 8,
+      "description": "Maximum number of new tokens to generate (recommended over max_length).",
+      "info": "Maximum number of new tokens to generate (recommended over max_length).",
+      "global_default": 256
+    },
+    "min_length": {
+      "name": "Minimum Output Length",
+      "label": "Min Output Length",
+      "type": "slider",
+      "value_type": "int",
+      "min": 0,
+      "max": 2048,
+      "step": 8,
+      "description": "Minimum number of tokens to generate before allowing EOS",
+      "info": "Minimum number of tokens to generate.",
+      "global_default": 0
+    },
+    "num_beams": {
+      "name": "Beam Search Width",
+      "label": "Beam Width",
+      "type": "slider",
+      "value_type": "int",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "description": "Number of parallel search paths in beam search",
+      "info": "Number of beams in beam search decoding. Higher = better, but slower.",
+      "global_default": 1
+    },
+    "early_stopping": {
+      "name": "Early Stopping",
+      "label": "Early Stopping",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Stop generation when all beams reach EOS token",
+      "info": "Stop generation early if all beams finish.",
+      "global_default": true
+    },
+    "do_sample": {
+      "name": "Sampling Mode",
+      "label": "Sampling",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Use random sampling instead of greedy/beam search",
+      "info": "If true, model samples randomly instead of greedy/beam search.",
+      "global_default": true
+    },
+    "typical_p": {
+      "name": "Typical Sampling",
+      "label": "Typical Sampling p",
+      "type": "slider",
+      "value_type": "float",
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "description": "Alternative to nucleus sampling that considers typicality",
+      "info": "Controls typical sampling, an alternative to nucleus sampling.",
+      "global_default": 0.9
+    },
+    "penalty_alpha": {
+      "name": "Contrastive Search Penalty",
+      "label": "Penalty Alpha (Contrastive Search)",
+      "type": "slider",
+      "value_type": "float",
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "description": "Penalty parameter for contrastive decoding",
+      "info": "Contrastive decoding penalty alpha parameter.",
+      "global_default": 0.0
+    },
+    "top_a": {
+      "name": "Top-A Sampling",
+      "label": "Top-A",
+      "type": "slider",
+      "value_type": "float",
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "description": "Alternative top-a sampling method",
+      "info": "Alternative top-a sampling.",
+      "global_default": 0.0
+    },
+    "temperature_decay": {
+      "name": "Temperature Decay",
+      "label": "Temperature Decay",
+      "type": "slider",
+      "value_type": "float",
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "description": "Gradually reduce temperature during generation",
+      "info": "Decay temperature as tokens are generated.",
+      "global_default": 0.0
+    },
+    "prefix_allowed_tokens": {
+      "name": "Allowed Prefix Tokens",
+      "label": "Allowed Prefix Tokens",
+      "type": "text",
+      "value_type": "str",
+      "description": "Restrict which tokens can appear at the beginning of generation",
+      "info": "Comma-separated list of allowed prefix tokens.",
+      "global_default": ""
+    }
+  },
+  "preprocessing_parameters": {
+    "splitter_type": {
+      "name": "Text Splitter Type",
+      "label": "Text Splitter",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "recursive",
+        "character",
+        "token",
+        "sentence",
+        "paragraph",
+        "custom"
+      ],
+      "description": "Different strategies for splitting long documents into chunks",
+      "info": "How to chunk the text. 'recursive' adapts to structure, 'sentence' for natural language.",
+      "global_default": "recursive"
+    },
+    "chunk_size": {
+      "name": "Chunk Size",
+      "label": "Chunk Size",
+      "type": "number",
+      "value_type": "int",
+      "min": 100,
+      "max": 10000,
+      "step": 100,
+      "description": "Target size for each text chunk (in characters or tokens)",
+      "info": "Size (in characters/tokens) for each text chunk.",
+      "global_default": 1500
+    },
+    "chunk_overlap": {
+      "name": "Chunk Overlap",
+      "label": "Chunk Overlap",
+      "type": "number",
+      "value_type": "int",
+      "min": 0,
+      "max": 1000,
+      "step": 50,
+      "description": "Number of characters/tokens to overlap between consecutive chunks",
+      "info": "Amount of overlap (in characters/tokens) between consecutive chunks.",
+      "global_default": 200
+    },
+    "remove_empty": {
+      "name": "Remove Empty Chunks",
+      "label": "Remove Empty Chunks",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Filter out chunks that are empty or contain only whitespace",
+      "info": "Remove chunks that are empty or only whitespace.",
+      "global_default": true
+    },
+    "min_chunk_length": {
+      "name": "Minimum Chunk Length",
+      "label": "Minimum Chunk Length",
+      "type": "number",
+      "value_type": "int",
+      "min": 0,
+      "max": 1000,
+      "step": 10,
+      "description": "Minimum length required for a chunk to be retained",
+      "info": "Minimum length (in characters) for a chunk to be retained.",
+      "global_default": 50
+    },
+    "merge_small_chunks": {
+      "name": "Merge Small Chunks",
+      "label": "Merge Small Sections",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Combine small chunks with neighboring ones",
+      "info": "Merge short chunks into neighboring ones.",
+      "global_default": true
+    },
+    "preserve_structure": {
+      "name": "Preserve Structure",
+      "label": "Preserve Structure",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Maintain document structure (paragraphs, sections) during splitting",
+      "info": "Keep paragraphs/sentences intact during splitting.",
+      "global_default": true
+    },
+    "enhance_retrieval": {
+      "name": "Enhance for Retrieval",
+      "label": "Enhance for Retrieval",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Optimize chunks specifically for search and retrieval tasks",
+      "info": "Optimize chunks for search engine retrieval.",
+      "global_default": false
+    },
+    "clean_text": {
+      "name": "Text Cleaning",
+      "label": "Clean Text",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Apply basic text cleaning (lowercase, normalize whitespace, etc.)",
+      "info": "Lowercase, normalize whitespace and punctuation.",
+      "global_default": true
+    },
+    "remove_special_chars": {
+      "name": "Remove Special Characters",
+      "label": "Remove Special Characters",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Remove symbols and special characters from text",
+      "info": "Remove symbols and special chars from the text.",
+      "global_default": false
+    },
+    "extract_key_sentences": {
+      "name": "Key Sentence Extraction",
+      "label": "Extract Key Sentences",
+      "type": "checkbox",
+      "value_type": "bool",
+      "description": "Identify and extract the most important sentences from each chunk",
+      "info": "Identify and extract most important sentences from each chunk.",
+      "global_default": false
+    },
+    "language": {
+      "name": "Document Language",
+      "label": "Language",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "other"
+      ],
+      "description": "Language of the document for language-specific preprocessing",
+      "info": "Language of the document for preprocessing-specific handling.",
+      "global_default": "en"
+    },
+    "sentence_splitter": {
+      "name": "Sentence Splitter Implementation",
+      "label": "Sentence Splitter",
+      "type": "dropdown",
+      "value_type": "str",
+      "options": [
+        "default",
+        "spacy",
+        "nltk",
+        "custom"
+      ],
+      "description": "Library/tool to use for sentence boundary detection",
+      "info": "Which library/tool to use for sentence splitting.",
+      "global_default": "default"
+    }
+  }
+}

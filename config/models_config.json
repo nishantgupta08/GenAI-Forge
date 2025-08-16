@@ -1,0 +1,4025 @@
+{
+  "models": [
+    {
+      "name": "Alibaba-NLP/gte-large-en-v1.5",
+      "type": "encoder",
+      "task_type": [],
+      "family": "new",
+      "source": "Alibaba-NLP",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "WPUncensored/gte-large-en-v1.5-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Alibaba-NLP/gte-Qwen2-7B-instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "qwen",
+      "source": "Alibaba-NLP",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "sunzx0810/gte-Qwen2-7B-instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RichardErkhov/Alibaba-NLP_-_gte-Qwen2-7B-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "fishbone64/gte-Qwen2-7B-instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mm/gte-Qwen2-7B-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "niancheng/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "cleatherbury/gte-Qwen2-7B-instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "shuyuej/gte-Qwen2-7B-instruct-GPTQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "brtaydin/gte-Qwen2-7B-instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "VenkatNDivi77/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "barnowak/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "KeyurRamoliya/gte-Qwen2-7B-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "KeyurRamoliya/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "soichisumi/gte-Qwen2-7B-instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "redshiva/gte-Qwen2-7B-instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "qaz-t/gte-Qwen2-7B-instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Bearsaerker/gte-Qwen2-7B-instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "wencan-lab/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "BN7002/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mmazeem/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mav23/gte-Qwen2-7B-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "tensorblock/gte-Qwen2-7B-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "beethogedeon/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mirekphd/gte-Qwen2-7B-instruct-Q2_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MichielEeckhout/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Fashion-Italia/gte-Qwen2-7B-instruct-Q4_K_M-GGUF"
+        }
+      ]
+    },
+    {
+      "name": "allenai/led-base-16384",
+      "type": "encoder-decoder",
+      "task_type": [],
+      "family": "led",
+      "source": "allenai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "BAAI/bge-large-en",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "BAAI",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "CompendiumLabs/bge-large-en-v1.5-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/bge-large-en-v1.5-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/bge-large-en-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "archit28/bge-large-en-v1.5-Q4_K_S-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "huoxu/bge-large-en-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sabafallah/bge-large-en-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sabafallah/bge-large-en-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "hxstar/bge-large-en-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "qmaru/bge-large-en-v1.5-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bge-large-en-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bge-large-en-v1.5-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bge-large-en-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bge-large-en-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RichardErkhov/CamiloGC93_-_bge-large-en-v1.5-etical-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "RichardErkhov/CamiloGC93_-_bge-large-en-v1.5-soft-skills-gguf"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "BAAI/bge-large-en-v1.5",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "BAAI",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "CompendiumLabs/bge-large-en-v1.5-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/bge-large-en-v1.5-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/bge-large-en-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "archit28/bge-large-en-v1.5-Q4_K_S-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "huoxu/bge-large-en-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sabafallah/bge-large-en-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sabafallah/bge-large-en-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "hxstar/bge-large-en-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "qmaru/bge-large-en-v1.5-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bge-large-en-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bge-large-en-v1.5-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RichardErkhov/CamiloGC93_-_bge-large-en-v1.5-etical-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "RichardErkhov/CamiloGC93_-_bge-large-en-v1.5-soft-skills-gguf"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "dragonkue/snowflake-arctic-embed-l-v2.0-ko",
+      "type": "encoder",
+      "task_type": [],
+      "family": "xlm-roberta",
+      "source": "dragonkue",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "embaas/sentence-transformers-e5-large-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "embaas",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "facebook/bart-large-cnn",
+      "type": "encoder-decoder",
+      "task_type": [],
+      "family": "bart",
+      "source": "facebook",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "google/flan-t5-base",
+      "type": "encoder-decoder",
+      "task_type": [],
+      "family": "t5",
+      "source": "google",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "Felladrin/gguf-flan-t5-base"
+        },
+        {
+          "format": "gguf",
+          "repo": "Felladrin/gguf-flan-t5-base-instruct-dolly_hhrlhf"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/flan-t5-base-minhcrafters-pychael-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Santyyy/flan-t5-base-VG-factual-sg-id-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "marroyo777/flan-t5-base-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "fareshzm/flan-t5-base-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "snowkitties/flan-t5-base-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/flan-t5-definition-en-base-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "vanraj1616/finetuned-flan-t5-base-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/flan-t5-base-alpaca-dv-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/flan-t5-base-alpaca-dv5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "DUTAOZHANG/flan-t5-base-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bb4d92fe-605b-4484-a749-fc18e6e2f169/flan-t5-base-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "andtt/flan-t5-base-Q3_K_S-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "andtt/flan-t5-base-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "andtt/flan-t5-base-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "google/flan-t5-large",
+      "type": "encoder-decoder",
+      "task_type": [],
+      "family": "t5",
+      "source": "google",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "Felladrin/gguf-flan-t5-large"
+        },
+        {
+          "format": "gguf",
+          "repo": "Felladrin/gguf-sharded-flan-t5-large"
+        },
+        {
+          "format": "gguf",
+          "repo": "nvhf/propositionizer-wiki-flan-t5-large-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "nvhf/MiniCheck-Flan-T5-Large-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ha1772007/flan-t5-large-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "alan314159/propositionizer-wiki-flan-t5-large-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "tianlp/flan-t5-large-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "tianlp/flan-t5-large-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Santyyy/flan-t5-large-VG-factual-sg-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "pszemraj/flan-t5-large-grammar-synthesis-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "marroyo777/flan-t5-large-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Ketan3101/flan-t5-large-v0.1-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "nguyenphuthien/flan-t5-large-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "jayakody2000lk/flan-t5-large-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "jonyee/flan-t5-large-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Inhinero/flan-t5-large-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/flan-t5-large-grammar-synthesis-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/flan-t5-definition-en-large-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Linuss4880/MiniCheck-Flan-T5-Large-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Linuss4880/MiniCheck-Flan-T5-Large-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "streamalpha/flan-t5-large-Q4_K_M-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "intfloat/e5-large-v2",
+      "type": "decoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "intfloat",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/e5-large-v2-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "Pekarnick/e5-large-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "KeyurRamoliya/e5-large-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/e5-large-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/e5-large-v2-i1-GGUF"
+        }
+      ]
+    },
+    {
+      "name": "intfloat/e5-mistral-7b-instruct",
+      "type": "encoder",
+      "task_type": [],
+      "family": "mistral",
+      "source": "intfloat",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "s3nh/intfloat-e5-mistral-7b-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "dranger003/e5-mistral-7b-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/E5-Mistral-7B-Instruct-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/e5-mistral-7b-instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "shuyuej/e5-mistral-7b-instruct-GPTQ"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "meta-llama/Llama-3-8B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": null,
+      "source": "meta-llama",
+      "license": null,
+      "quantizations": []
+    },
+    {
+      "name": "meta-llama/Llama-3.1-8B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": null,
+      "source": "meta-llama",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/DarkIdol-Llama-3.1-8B-Instruct-1.2-Uncensored-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "tensorblock/DarkIdol-Llama-3.1-8B-Instruct-1.2-Uncensored-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "unsloth/Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "tensorblock/scb10x_llama3.1-typhoon2-8b-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "DavidAU/Llama-3.1-DeepHermes-R1-Reasoning-8B-DarkIdol-Instruct-1.2-Uncensored-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "DevQuasar/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "AI-Engine/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-Q2_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "neopolita/meta-llama-3.1-8b-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "legraphista/Meta-Llama-3.1-8B-Instruct-IMat-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "aniljava/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "brittlewis12/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Ren6767/Meta-Llama-3.1-8B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mmnga/Llama-3.1-8B-Instruct-gguf"
+        },
+        {
+          "format": "exl2",
+          "repo": "turboderp/Llama-3.1-8B-Instruct-exl2"
+        },
+        {
+          "format": "gptq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
+        },
+        {
+          "format": "gptq",
+          "repo": "shuyuej/Meta-Llama-3.1-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "gptq",
+          "repo": "ModelCloud/Meta-Llama-3.1-8B-Instruct-gptq-4bit"
+        },
+        {
+          "format": "gptq",
+          "repo": "thesven/Meta-Llama-3.1-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "xaskasdf/llama-3.1-8b-instruct-07-24-gguf"
+        },
+        {
+          "format": "awq",
+          "repo": "ilhamdprastyo/Llama-3.1-8B-Instruct-awq"
+        },
+        {
+          "format": "gguf",
+          "repo": "ParisNeo/Llama-3.1-8B-Instruct-lollmsformat_GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "NikolayKozloff/Llama-3.1-8B-Instruct-abliterated_via_adapter-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "grimjim/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF"
+        },
+        {
+          "format": "awq",
+          "repo": "dahara1/llama3.1-8b-Instruct-awq"
+        },
+        {
+          "format": "awq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lm-kit/llama-3.1-8b-instruct-gguf"
+        },
+        {
+          "format": "exl2",
+          "repo": "Downtown-Case/meta-llama_Meta-Llama-3.1-8B-Instruct-exl2-8bpw"
+        },
+        {
+          "format": "exl2",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-exl2_5.0bpw"
+        },
+        {
+          "format": "exl2",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-exl2_6.0bpw"
+        },
+        {
+          "format": "exl2",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-exl2_8.0bpw"
+        },
+        {
+          "format": "exl2",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-exl2_4.0bpw"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw2.25-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw2.5-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw3-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw3.5-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "lucyknada/meta-llama_Meta-Llama-3.1-8B-Instruct-exl2-6.0bpw"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw3.7-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw4-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw4.2-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "lucyknada/meta-llama_Meta-Llama-3.1-8B-Instruct-exl2-8.0bpw"
+        },
+        {
+          "format": "exl2",
+          "repo": "blockblockblock/Meta-Llama-3.1-8B-Instruct-bpw4.4-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3.1-8B-Instruct-3.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3.1-8B-Instruct-4.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3.1-8B-Instruct-5.0bpw-h6-exl2"
+        }
+      ]
+    },
+    {
+      "name": "meta-llama/Meta-Llama-3-8B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": null,
+      "source": "meta-llama",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "NoelJacob/Meta-Llama-3-8B-Instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "awq",
+          "repo": "solidrust/Meta-Llama-3-8B-Instruct-hf-AWQ"
+        },
+        {
+          "format": "exl2",
+          "repo": "bartowski/Meta-Llama-3-8B-Instruct-special-tokens-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3-8B-Instruct-GGUF-special-tokens"
+        },
+        {
+          "format": "gguf",
+          "repo": "NousResearch/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "PawanKrd/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "OxxoCodes/Meta-Llama-3-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "brittlewis12/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "mgoin/Meta-Llama-3-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-3.0bpw-h6-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "PrunaAI/Meta-Llama-3-8B-Instruct-GGUF-smashed"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-4.0bpw-h6-exl2"
+        },
+        {
+          "format": "gptq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-5.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-6.0bpw-h6-exl2"
+        },
+        {
+          "format": "awq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
+        },
+        {
+          "format": "gguf",
+          "repo": "AI-Engine/Meta-Llama-3-8B-Instruct-GGUF"
+        }
+      ]
+    },
+    {
+      "name": "microsoft/Phi-3-mini-4k-instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "phi",
+      "source": "microsoft",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "microsoft/Phi-3-mini-4k-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/Phi-3-mini-4k-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "SanctumAI/Phi-3-mini-4k-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "martineden/Phi-3-mini-4k-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Phi-3-mini-4k-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "qwp4w3hyb/Phi-3-mini-4k-instruct-iMat-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "PrunaAI/Phi-3-mini-4k-instruct-GGUF-Imatrix-smashed"
+        },
+        {
+          "format": "gguf",
+          "repo": "Jaward/phi-3-mini-4k-instruct.Q4_0.gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Phi-3-mini-4k-instruct-old-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "brittlewis12/Phi-3-mini-4k-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Josephgflowers/Phi-3-mini-4k-instruct-Cinder-with-16bit-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "kaitchup/Phi-3-mini-4k-instruct-gptq-4bit"
+        }
+      ]
+    },
+    {
+      "name": "mistralai/Mistral-7B-Instruct-v0.1",
+      "type": "decoder",
+      "task_type": [],
+      "family": null,
+      "source": "mistralai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Mistral-7B-Instruct-v0.3-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-GGUF"
+        },
+        {
+          "format": "exl2",
+          "repo": "turboderp/Mistral-7B-instruct-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-3.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-4.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-5.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-6.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-8.0bpw-exl2"
+        },
+        {
+          "format": "awq",
+          "repo": "casperhansen/mistral-7b-instruct-v0.1-awq"
+        },
+        {
+          "format": "awq",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-AWQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "filipealmeida/Mistral-7B-Instruct-v0.1-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-32g-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-128g-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-32g-wikitext"
+        },
+        {
+          "format": "gptq",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-GPTQ"
+        }
+      ]
+    },
+    {
+      "name": "mistralai/Mistral-7B-Instruct-v0.2",
+      "type": "decoder",
+      "task_type": [],
+      "family": "mistral",
+      "source": "mistralai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Mistral-7B-Instruct-v0.3-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-GGUF"
+        },
+        {
+          "format": "exl2",
+          "repo": "turboderp/Mistral-7B-instruct-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-3.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-4.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-5.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-6.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-8.0bpw-exl2"
+        },
+        {
+          "format": "awq",
+          "repo": "casperhansen/mistral-7b-instruct-v0.1-awq"
+        },
+        {
+          "format": "awq",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-AWQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "filipealmeida/Mistral-7B-Instruct-v0.1-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-32g-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-128g-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-32g-wikitext"
+        },
+        {
+          "format": "gptq",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-GPTQ"
+        }
+      ]
+    },
+    {
+      "name": "mistralai/Mistral-7B-Instruct-v0.3",
+      "type": "decoder",
+      "task_type": [],
+      "family": null,
+      "source": "mistralai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Mistral-7B-Instruct-v0.3-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-GGUF"
+        },
+        {
+          "format": "exl2",
+          "repo": "turboderp/Mistral-7B-instruct-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-3.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-4.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-5.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-6.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Mistral-7B-Instruct-v0.1-8.0bpw-exl2"
+        },
+        {
+          "format": "awq",
+          "repo": "casperhansen/mistral-7b-instruct-v0.1-awq"
+        },
+        {
+          "format": "awq",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-AWQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "filipealmeida/Mistral-7B-Instruct-v0.1-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-32g-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-128g-ERP"
+        },
+        {
+          "format": "gptq",
+          "repo": "openerotica/Mistral-7B-Instruct-v0.1-GPTQ-32g-wikitext"
+        },
+        {
+          "format": "gptq",
+          "repo": "TheBloke/Mistral-7B-Instruct-v0.1-GPTQ"
+        }
+      ]
+    },
+    {
+      "name": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "type": "decoder",
+      "task_type": [],
+      "family": null,
+      "source": "mistralai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GPTQ"
+        },
+        {
+          "format": "awq",
+          "repo": "TheBloke/Mixtral-8x7B-Instruct-v0.1-AWQ"
+        },
+        {
+          "format": "awq",
+          "repo": "ybelkada/Mixtral-8x7B-Instruct-v0.1-AWQ"
+        },
+        {
+          "format": "exl2",
+          "repo": "turboderp/Mixtral-8x7B-instruct-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-3.5bpw-h6-exl2-rpcal"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-3.75bpw-h6-exl2-rpcal"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-5.5bpw-h6-exl2-rpcal"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-3.75bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-3.5bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-5.5bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-6.0bpw-h6-exl2-rpcal"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-4.5bpw-h6-exl2-rpcal"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-3.7bpw-h6-exl2-rpcal"
+        },
+        {
+          "format": "exl2",
+          "repo": "intervitens/Mixtral-8x7B-Instruct-v0.1-3.7bpw-h6-exl2"
+        },
+        {
+          "format": "gptq",
+          "repo": "Shani123/Mixtral-8x7B-Instruct-v0.1-GPTQ"
+        }
+      ]
+    },
+    {
+      "name": "nomic-ai/nomic-embed-text-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "nomic_bert",
+      "source": "nomic-ai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v2-moe-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/Nomic-embed-text-v1.5-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/Nomic-embed-text-v1.5-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RinaChen/nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/nomic-embed-text-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RinaChen/Guwen-nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "fluidapp/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "zyj2003lj/nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "BenevolenceMessiah/nomic-embed-text-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "msyukorai/nomic-embed-text-v1.5-Q4_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "nomic-ai/nomic-embed-text-v1.5",
+      "type": "encoder",
+      "task_type": [],
+      "family": "nomic_bert",
+      "source": "nomic-ai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v2-moe-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/Nomic-embed-text-v1.5-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/Nomic-embed-text-v1.5-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RinaChen/nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/nomic-embed-text-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RinaChen/Guwen-nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "fluidapp/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "zyj2003lj/nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "BenevolenceMessiah/nomic-embed-text-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "msyukorai/nomic-embed-text-v1.5-Q4_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "nomic-ai/nomic-embed-text-v2-moe",
+      "type": "encoder",
+      "task_type": [],
+      "family": "nomic_bert",
+      "source": "nomic-ai",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v2-moe-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "nomic-ai/nomic-embed-text-v1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/Nomic-embed-text-v1.5-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/Nomic-embed-text-v1.5-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RinaChen/nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/nomic-embed-text-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "fluidapp/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "zyj2003lj/nomic-embed-text-v1.5-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "BenevolenceMessiah/nomic-embed-text-v1.5-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "msyukorai/nomic-embed-text-v1.5-Q4_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/nomic-embed-text-v1.5-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "NousResearch/Meta-Llama-3-8B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "llama",
+      "source": "NousResearch",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "NoelJacob/Meta-Llama-3-8B-Instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "awq",
+          "repo": "solidrust/Meta-Llama-3-8B-Instruct-hf-AWQ"
+        },
+        {
+          "format": "exl2",
+          "repo": "bartowski/Meta-Llama-3-8B-Instruct-special-tokens-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3-8B-Instruct-GGUF-special-tokens"
+        },
+        {
+          "format": "gguf",
+          "repo": "NousResearch/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "PawanKrd/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "OxxoCodes/Meta-Llama-3-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "brittlewis12/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "mgoin/Meta-Llama-3-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-3.0bpw-h6-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "PrunaAI/Meta-Llama-3-8B-Instruct-GGUF-smashed"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-4.0bpw-h6-exl2"
+        },
+        {
+          "format": "gptq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-5.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Meta-Llama-3-8B-Instruct-6.0bpw-h6-exl2"
+        },
+        {
+          "format": "awq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
+        },
+        {
+          "format": "gguf",
+          "repo": "AI-Engine/Meta-Llama-3-8B-Instruct-GGUF"
+        }
+      ]
+    },
+    {
+      "name": "NousResearch/Meta-Llama-3.1-8B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "llama",
+      "source": "NousResearch",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gptq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
+        },
+        {
+          "format": "awq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "DevQuasar/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "AI-Engine/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "shuyuej/Meta-Llama-3.1-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-Q2_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "neopolita/meta-llama-3.1-8b-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "legraphista/Meta-Llama-3.1-8B-Instruct-IMat-GGUF"
+        }
+      ]
+    },
+    {
+      "name": "philschmid/bart-large-cnn-samsum",
+      "type": "encoder-decoder",
+      "task_type": [],
+      "family": "bart",
+      "source": "philschmid",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Qwen/Qwen2-7B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "qwen",
+      "source": "Qwen",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "unsloth/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Qwen/Qwen2.5-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-7B-Instruct-Uncensored-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Qwen2.5-7B-Instruct-1M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen_Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "GPT4All-Community/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "teddylee777/Qwen2.5-7B-Instruct-kowiki-qa-context-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Qwen2.5-7B-Instruct-abliterated-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Orion-zhen/Qwen2.5-7B-Instruct-Uncensored-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "unsloth/Qwen2.5-Coder-7B-Instruct-128K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen2.5-7B-Instruct-1M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-Coder-7B-Instruct-Uncensored-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-7B-Instruct-wildfeedback-iterDPO-iter2-4k-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2-7B-Instruct-GPTQ-Int4"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2-7B-Instruct-GPTQ-Int8"
+        },
+        {
+          "format": "awq",
+          "repo": "Qwen/Qwen2-7B-Instruct-AWQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "Qwen/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Qwen2-7B-Instruct-3.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Qwen2-7B-Instruct-4.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Qwen2-7B-Instruct-5.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Qwen2-7B-Instruct-6.0bpw-h6-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "LoneStriker/Qwen2-7B-Instruct-8.0bpw-h8-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "brittlewis12/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "NikolayKozloff/Qwen2-7B-Instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "NikolayKozloff/Qwen2-7B-Instruct-Q5_K_S-GGUF"
+        },
+        {
+          "format": "exl2",
+          "repo": "bartowski/Qwen2-7B-Instruct-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "legraphista/Qwen2-7B-Instruct-IMat-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "NikolayKozloff/Qwen2-7B-Instruct-Q4_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2-7B-Instruct-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MCZK/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "neopolita/qwen2-7b-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "Emilio407/Qwen2-7B-Instruct-GGUF"
+        },
+        {
+          "format": "awq",
+          "repo": "Qwen/Qwen2.5-VL-7B-Instruct-AWQ"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-2_2bpw_exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-3_0bpw_exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-2_5bpw_exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-4_0bpw_exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-3_5bpw_exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-3_75bpw_exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-6_0bpw_exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "Zoyd/Qwen_Qwen2-7B-Instruct-4_25bpw_exl2"
+        }
+      ]
+    },
+    {
+      "name": "Qwen/Qwen2-Audio-7B-Instruct",
+      "type": "encoder-decoder",
+      "task_type": [],
+      "family": "qwen2_audio",
+      "source": "Qwen",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "second-state/Qwen2-Audio-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/Qwen2-Audio-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2-Audio-7B-Instruct-Ultrasuite-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Malaysian-Qwen2-Audio-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Malaysian-Qwen2-Audio-7B-Instruct-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2-Audio-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2-Audio-7B-Instruct-i1-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Qwen/Qwen2-VL-7B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "qwen2_vl",
+      "source": "Qwen",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "unsloth/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen_Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-i1-GGUF"
+        },
+        {
+          "format": "awq",
+          "repo": "Qwen/Qwen2-VL-7B-Instruct-AWQ"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2-VL-7B-Instruct-GPTQ-Int4"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2-VL-7B-Instruct-GPTQ-Int8"
+        },
+        {
+          "format": "awq",
+          "repo": "p-christ/Qwen2-VL-7B-Instruct-AWQ"
+        },
+        {
+          "format": "awq",
+          "repo": "Gabriel/Qwen2-VL-7B-Instruct-AWQ"
+        },
+        {
+          "format": "awq",
+          "repo": "ruben3010/Qwen2-VL-7B-Instruct-AWQ-IE"
+        },
+        {
+          "format": "awq",
+          "repo": "Qwen/Qwen2.5-VL-7B-Instruct-AWQ"
+        }
+      ]
+    },
+    {
+      "name": "Qwen/Qwen2.5-7B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "qwen",
+      "source": "Qwen",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "unsloth/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Qwen/Qwen2.5-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-7B-Instruct-Uncensored-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Qwen2.5-7B-Instruct-1M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen_Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "teddylee777/Qwen2.5-7B-Instruct-kowiki-qa-context-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Qwen2.5-7B-Instruct-abliterated-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Orion-zhen/Qwen2.5-7B-Instruct-Uncensored-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "unsloth/Qwen2.5-Coder-7B-Instruct-128K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen2.5-7B-Instruct-1M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-Coder-7B-Instruct-Uncensored-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-i1-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "AXERA-TECH/Qwen2.5-7B-Instruct"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-7B-Instruct-wildfeedback-iterDPO-iter2-4k-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen2.5-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2.5-7B-Instruct-GPTQ-Int8"
+        },
+        {
+          "format": "awq",
+          "repo": "Qwen/Qwen2.5-7B-Instruct-AWQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Qwen2.5-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "paultimothymooney/Qwen2.5-7B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "paultimothymooney/Qwen2.5-7B-Instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Qwen2.5-7B-Instruct-GGUF"
+        },
+        {
+          "format": "awq",
+          "repo": "Qwen/Qwen2.5-VL-7B-Instruct-AWQ"
+        }
+      ]
+    },
+    {
+      "name": "Qwen/Qwen2.5-Coder-7B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "qwen",
+      "source": "Qwen",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "unsloth/Qwen2.5-Coder-7B-Instruct-128K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-Coder-7B-Instruct-Uncensored-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "smcleod/Qwen2.5-Coder-7B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "DevQuasar/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "CISCai/Qwen2.5-Coder-7B-Instruct-SOTA-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Coder-7B-Instruct-Q4_K_S-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Coder-7B-Instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Coder-7B-Instruct-Q5_K_S-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Coder-7B-Instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Coder-7B-Instruct-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Coder-7B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "neopolita/qwen2.5-coder-7b-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ClaudioItaly/Qwen2.5-Coder-7B-Instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Alex01837178373/Qwen2.5-Coder-7B-Instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RichardErkhov/Qwen_-_Qwen2.5-Coder-7B-Instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "legraphista/Qwen2.5-Coder-7B-Instruct-IMat-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/Qwen2.5-Coder-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GPTQ-Int4"
+        },
+        {
+          "format": "gptq",
+          "repo": "Qwen/Qwen2.5-Coder-7B-Instruct-GPTQ-Int8"
+        }
+      ]
+    },
+    {
+      "name": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "qwen",
+      "source": "Qwen",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen2.5-Math-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Qwen2.5-Math-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Math-7B-Instruct-Q4_K_S-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Math-7B-Instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Math-7B-Instruct-Q5_K_S-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Math-7B-Instruct-Q5_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Math-7B-Instruct-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Triangle104/Qwen2.5-Math-7B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "QuantFactory/Qwen2.5-Math-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "neopolita/qwen2.5-math-7b-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "legraphista/Qwen2.5-Math-7B-Instruct-IMat-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/Qwen2.5-Math-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/Qwen2.5-Math-7B-Instruct-GGUF"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-4.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-8.0bpw-h8-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-7.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-6.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-5.5bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-4.5bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-5.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-3.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-2.0bpw-exl2"
+        },
+        {
+          "format": "exl2",
+          "repo": "DrNicefellow/Qwen2.5-Math-7B-Instruct-1.0bpw-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "TLAIHug/Qwen2.5-Math-7B-Instruct-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "RichardErkhov/Qwen_-_Qwen2.5-Math-7B-Instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-Math-7B-Instruct-GGUF"
+        }
+      ]
+    },
+    {
+      "name": "Qwen/Qwen2.5-VL-7B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "qwen2_5_vl",
+      "source": "Qwen",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "unsloth/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Qwen_Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "awq",
+          "repo": "Qwen/Qwen2.5-VL-7B-Instruct-AWQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/Qwen2.5-VL-7B-Instruct-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "benxh/Qwen2.5-VL-7B-Instruct-GGUF"
+        },
+        {
+          "format": "exl2",
+          "repo": "turboderp/Qwen2.5-VL-7B-Instruct-exl2"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/all-distilroberta-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "roberta",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "NathanMad/sentence-transformers_all-distilroberta-v1-gguf"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/all-MiniLM-L12-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "leliuga/all-MiniLM-L12-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sheldonrobinson/all-MiniLM-L12-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sheldonrobinson/all-MiniLM-L12-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "kalzero/all-MiniLM-L12-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "badger212/all-MiniLM-L12-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "NathanMad/sentence-transformers_all-MiniLM-L12-v2-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "iamahmadsaboor/all-MiniLM-L12-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/all-MiniLM-L6-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "caliex/all-MiniLM-L6-v2-f16.gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "prithivida/all-MiniLM-L6-v2-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/All-MiniLM-L6-v2-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leliuga/all-MiniLM-L6-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "gaianet/All-MiniLM-L6-v2-Embedding-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "afrideva/GIST-all-MiniLM-L6-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Jarbas/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "LLukas22/all-MiniLM-L6-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ichi-kom/all-MiniLM-L6-v2-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "aisuko/all-MiniLM-L6-v2-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "huoxu/all-MiniLM-L6-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "huoxu/all-MiniLM-L6-v2-Q4_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "dsouza889/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Felladrin/gguf-Q8_0-all-MiniLM-L6-v2"
+        },
+        {
+          "format": "gguf",
+          "repo": "sheldonrobinson/all-MiniLM-L6-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sheldonrobinson/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "fartboner/all-MiniLM-L6-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "fartboner/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sabafallah/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/GIST-all-MiniLM-L6-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "velyan/all-MiniLM-L6-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Mungert/all-MiniLM-L6-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "sudomoniker/all-MiniLM-L6-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "iamahmadsaboor/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/geo-all-MiniLM-L6-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/geo-all-MiniLM-L6-v2-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Lytchbaball/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "volker-mauel/all-minilm-l6-v2-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "zimmyproton88/all-MiniLM-L6-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/all-mpnet-base-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "mpnet",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/all-roberta-large-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "roberta",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/bert-base-nli-mean-tokens",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bert-base-nli-mean-tokens-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/bert-base-nli-mean-tokens-i1-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/bert-large-nli-max-tokens",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/clip-ViT-B-32-multilingual-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/distilbert-base-nli-mean-tokens",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-mean-tokens-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-stsb-quora-ranking-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-stsb-mean-tokens-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-stsb-mean-tokens-i1-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/distilbert-base-nli-stsb-mean-tokens",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-mean-tokens-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-stsb-quora-ranking-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-stsb-mean-tokens-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/distilbert-base-nli-stsb-mean-tokens-i1-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/distiluse-base-multilingual-cased",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/distiluse-base-multilingual-cased-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/distiluse-base-multilingual-cased-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/LaBSE",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/labse-gguf"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/msmarco-bert-base-dot-v5",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "mradermacher/msmarco-bert-base-dot-v5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/msmarco-bert-base-dot-v5-i1-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/msmarco-distilbert-base-dot-prod-v3",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/msmarco-distilbert-base-tas-b",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/msmarco-distilbert-base-v4",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/msmarco-distilbert-cos-v5",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/msmarco-MiniLM-L12-cos-v5",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "mradermacher/msmarco-MiniLM-L12-v3-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/msmarco-MiniLM-L12-v3-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/msmarco-MiniLM-L12-cos-v5-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/msmarco-MiniLM-L12-cos-v5-i1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/ms-marco-MiniLM-L12-v2-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/multi-qa-distilbert-cos-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "distilbert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/multi-qa-MiniLM-L6-cos-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "Felladrin/gguf-multi-qa-MiniLM-L6-cos-v1"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/multi-qa-MiniLM-L6-cos-v1-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mradermacher/multi-qa-MiniLM-L6-cos-v1-i1-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/multi-qa-mpnet-base-dot-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "mpnet",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/paraphrase-MiniLM-L6-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/paraphrase-mpnet-base-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "mpnet",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "mykor/paraphrase-multilingual-mpnet-base-v2.gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sizrox/paraphrase-multilingual-mpnet-base-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "roytmana/paraphrase-multilingual-mpnet-base-v2-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "pyarn/paraphrase-multilingual-mpnet-base-v2-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "pocohos/paraphrase-multilingual-mpnet-base-v2-Q6_K-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "type": "encoder",
+      "task_type": [],
+      "family": "xlm-roberta",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "sentence-transformers/paraphrase-xlm-r-multilingual-v1",
+      "type": "encoder",
+      "task_type": [],
+      "family": "xlm-roberta",
+      "source": "sentence-transformers",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "mykor/paraphrase-xlm-r-multilingual-v1.gguf"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Snowflake/snowflake-arctic-embed-l",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "Snowflake",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Snowflake/snowflake-arctic-embed-l-v2.0",
+      "type": "encoder",
+      "task_type": [],
+      "family": "xlm-roberta",
+      "source": "Snowflake",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Snowflake/snowflake-arctic-embed-m",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "Snowflake",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Snowflake/snowflake-arctic-embed-m-v1.5",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "Snowflake",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Snowflake/snowflake-arctic-embed-m-v2.0",
+      "type": "encoder",
+      "task_type": [],
+      "family": "gte",
+      "source": "Snowflake",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Snowflake/snowflake-arctic-embed-s",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "Snowflake",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "Snowflake/snowflake-arctic-embed-xs",
+      "type": "encoder",
+      "task_type": [],
+      "family": "bert",
+      "source": "Snowflake",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-l-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-long-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-m-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-s-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-embed-xs-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "ChristianAzinn/snowflake-arctic-instruct-gguf-BROKEN"
+        },
+        {
+          "format": "gguf",
+          "repo": "sszymczyk/snowflake-arctic-instruct-gqa-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "radia/snowflake-arctic-embed-l-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bcastle/snowflake-arctic-embed-l-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "yishan-wang/snowflake-arctic-embed-s-Q8_0-GGUF"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 8,
+          "method": "int8"
+        },
+        {
+          "format": "bitsandbytes",
+          "bits": 4,
+          "method": "nf4"
+        }
+      ]
+    },
+    {
+      "name": "unsloth/llama-3-8b-Instruct-bnb-4bit",
+      "type": "decoder",
+      "task_type": [],
+      "family": "llama",
+      "source": "unsloth",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "exl2",
+          "repo": "turboderp/Llama-3-8B-Instruct-exl2"
+        },
+        {
+          "format": "gguf",
+          "repo": "JaaackXD/Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "aipib/Llama-3-8B-Instruct-Ja.gguf"
+        },
+        {
+          "format": "awq",
+          "repo": "casperhansen/llama-3-8b-instruct-awq"
+        },
+        {
+          "format": "gguf",
+          "repo": "backyardai/llama-3-8b-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "Ainonake/LLama3-8b-Instruct-GGUF-fp16"
+        },
+        {
+          "format": "gguf",
+          "repo": "vramesh/Llama-3-8B-Instruct_q8_0-gguf"
+        },
+        {
+          "format": "awq",
+          "repo": "solidrust/Llama-3-8B-Instruct-Base-Slerp-AWQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "second-state/Llama-3-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "astronomer/Llama-3-8B-Instruct-GPTQ-8-Bit"
+        }
+      ]
+    },
+    {
+      "name": "unsloth/Meta-Llama-3.1-8B-Instruct",
+      "type": "decoder",
+      "task_type": [],
+      "family": "llama",
+      "source": "unsloth",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gptq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
+        },
+        {
+          "format": "awq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "DevQuasar/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "AI-Engine/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "shuyuej/Meta-Llama-3.1-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-Q2_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "neopolita/meta-llama-3.1-8b-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "legraphista/Meta-Llama-3.1-8B-Instruct-IMat-GGUF"
+        }
+      ]
+    },
+    {
+      "name": "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit",
+      "type": "decoder",
+      "task_type": [],
+      "family": "llama",
+      "source": "unsloth",
+      "license": null,
+      "quantizations": [
+        {
+          "format": "gptq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
+        },
+        {
+          "format": "awq",
+          "repo": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4"
+        },
+        {
+          "format": "gguf",
+          "repo": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "MaziyarPanahi/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "lmstudio-community/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "YorkieOH10/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "DevQuasar/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q8_0-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q6_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-hf-Q4_K_M-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "AI-Engine/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gptq",
+          "repo": "shuyuej/Meta-Llama-3.1-8B-Instruct-GPTQ"
+        },
+        {
+          "format": "gguf",
+          "repo": "leafspark/Meta-Llama-3.1-8B-Instruct-Q2_K-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "bullerwins/Meta-Llama-3.1-8B-Instruct-GGUF"
+        },
+        {
+          "format": "gguf",
+          "repo": "neopolita/meta-llama-3.1-8b-instruct-gguf"
+        },
+        {
+          "format": "gguf",
+          "repo": "legraphista/Meta-Llama-3.1-8B-Instruct-IMat-GGUF"
+        }
+      ]
+    }
+  ]
+}
