@@ -204,7 +204,7 @@ def discover_quant_forks(api: HfApi, base_repo_id: str, limit: int = 60) -> List
 
 def crawl(
     min_downloads: int = 100_000,
-    quant_min_downloads: int = 10_000,
+    quant_min_downloads: int = 0,
     limit_per_query: int = 200,
     sleep_s: float = 0.2,
     download: str = "none",
