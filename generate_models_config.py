@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 Generate a curated models catalog (famous models + quantized variants)
-and keep ONLY the architecture `family` (llama, mistral, qwen, t5, bart, phi, gemma, etc.).
+and keep ONLY: name, type, family, source, params, quantizations.
+
+'params' = number of parameters (weights). Quantized variants inherit the same
+count (quantization changes precision/size on disk, not parameter count).
 
 Requirements:
   pip install "huggingface_hub>=0.14.0"
@@ -75,8 +78,8 @@ QUANT_PATTERNS = {
 }
 
 DEFAULT_BNB_HINTS = [
-    {"format":"bitsandbytes","bits":8,"method":"int8"},
-    {"format":"bitsandbytes","bits":4,"method":"nf4"}
+    {"format": "bitsandbytes", "bits": 8, "method": "int8"},
+    {"format": "bitsandbytes", "bits": 4, "method": "nf4"}
 ]
 
 FAMILY_FROM_MODEL_TYPE = {
@@ -102,15 +105,6 @@ def arch_type_from_tags(tags: List[str]) -> str:
     if {"seq2seq", "text2text-generation"} & t:
         return "encoder-decoder"
     return "decoder"
-
-def task_types_from_tags(tags: List[str]) -> List[str]:
-    known = {
-        "text-generation","text2text-generation","text-embedding",
-        "question-answering","summarization","chat","feature-extraction",
-        "fill-mask","translation"
-    }
-    out = [x for x in (tags or []) if x in known]
-    return sorted(out)
 
 def parse_last_modified(card) -> Optional[datetime]:
     iso = getattr(card, "lastModified", None) or getattr(card, "lastModifiedAt", None)
@@ -139,7 +133,6 @@ def is_famous(card) -> bool:
     lm = parse_last_modified(card)
     recency_ok = False
     if lm:
-        from datetime import datetime as dt
         try:
             recency_ok = (datetime.now(timezone.utc) - lm) <= timedelta(days=RECENCY_DAYS)
         except Exception:
@@ -174,7 +167,8 @@ def add_bnb_hints_if_applicable(entry: dict):
         q = entry.setdefault("quantizations", [])
         have = {d.get("format") for d in q}
         if "bitsandbytes" not in have:
-            entry["quantizations"] = q + [{"format":"bitsandbytes","bits":8,"method":"int8"},{"format":"bitsandbytes","bits":4,"method":"nf4"}]
+            entry["quantizations"] = q + [{"format":"bitsandbytes","bits":8,"method":"int8"},
+                                          {"format":"bitsandbytes","bits":4,"method":"nf4"}]
 
 def load_config_dict(repo_id: str) -> Optional[dict]:
     try:
@@ -193,6 +187,31 @@ def infer_family_from_model_type(model_type: Optional[str]) -> Optional[str]:
     mt = model_type.lower()
     return FAMILY_FROM_MODEL_TYPE.get(mt, mt)
 
+def get_num_parameters(repo_id: str) -> Optional[int]:
+    """Try to read parameter count from config.json, then from cardData."""
+    cfg = load_config_dict(repo_id)
+    if cfg:
+        for k in ("n_parameters", "num_parameters", "model_size", "params"):
+            if k in cfg:
+                try:
+                    return int(cfg[k])
+                except Exception:
+                    pass
+    # fallback to model card metadata
+    try:
+        api = HfApi()
+        card = api.model_info(repo_id)
+        data = getattr(card, "cardData", None) or {}
+        for k in ("n_parameters", "num_parameters", "model_size", "params"):
+            if k in data:
+                try:
+                    return int(data[k])
+                except Exception:
+                    continue
+    except Exception:
+        pass
+    return None
+
 # -------- Build --------
 
 def build_catalog(limit_per_query: int = 100) -> dict:
@@ -208,28 +227,28 @@ def build_catalog(limit_per_query: int = 100) -> dict:
             cards = [c for c in cards if q.lower() in c.modelId.lower()]
         for card in cards:
             model_id = card.modelId
+            # skip quantized forks as base entries
             if any(re.search(pat, model_id.lower()) for pat in QUANT_PATTERNS.values()):
                 continue
             if not is_famous(card):
                 continue
 
             tags = getattr(card, "tags", None) or []
-            card_data = getattr(card, "cardData", None) or {}
 
             entry = base_models.get(model_id) or {
                 "name": model_id,
                 "type": arch_type_from_tags(tags),
-                "task_type": [],  # keep lean
                 "family": None,
                 "source": (model_id.split("/")[0] if "/" in model_id else "unknown"),
-                "license": card_data.get("license") if isinstance(card_data, dict) else None,
+                "params": None,
                 "quantizations": []
             }
             base_models[model_id] = entry
 
-    # 2) attach quantized forks and set family from config.json
+    # 2) attach quantized forks, set family & params
     for model_id, entry in list(base_models.items()):
         basename = model_id.split("/")[-1]
+
         # quant forks
         for fmt in QUANT_PATTERNS.keys():
             q = f"{basename} {fmt}"
@@ -251,29 +270,39 @@ def build_catalog(limit_per_query: int = 100) -> dict:
         if cfg:
             entry["family"] = infer_family_from_model_type(cfg.get("model_type"))
 
-    # 3) ensure curated allowlist entries exist with family if possible
+        # parameter count
+        params = get_num_parameters(model_id)
+        entry["params"] = params
+        # propagate same count to quant variants (quantization doesn't change params)
+        for qd in entry["quantizations"]:
+            qd.setdefault("params", params)
+
+    # 3) ensure curated allowlist exists
     for name in CURATED_ALLOWLIST:
         if name not in base_models:
             base_models[name] = {
                 "name": name,
                 "type": "decoder",
-                "task_type": [],
                 "family": None,
                 "source": (name.split("/")[0] if "/" in name else "unknown"),
-                "license": None,
+                "params": get_num_parameters(name),
                 "quantizations": []
             }
             add_bnb_hints_if_applicable(base_models[name])
             cfg = load_config_dict(name)
             if cfg:
                 base_models[name]["family"] = infer_family_from_model_type(cfg.get("model_type"))
+            # propagate to quant stubs if any
+            p = base_models[name]["params"]
+            for qd in base_models[name]["quantizations"]:
+                qd.setdefault("params", p)
 
     catalog = sorted(base_models.values(), key=lambda d: d["name"].lower())
     return {"models": catalog}
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", default="models_config_family_only.json", help="Output JSON path")
+    parser.add_argument("--out", default="models_config.json", help="Output JSON path")
     parser.add_argument("--limit", type=int, default=100, help="Per-query search limit")
     args = parser.parse_args()
 
