@@ -1,3 +1,4 @@
+
 import json
 import pandas as pd
 import streamlit as st
@@ -11,115 +12,79 @@ def _format_quantizations(q):
             return ""
         if isinstance(q, str):
             return q
-
         out = []
-        # Count GGUF entries
-        ggufs = sum(1 for x in q if isinstance(x, dict) and x.get("format") == "gguf")
-        if ggufs:
-            out.append(f"gguf×{ggufs}")
-
-        # Bitsandbytes entries
+        gguf_cnt = sum(1 for x in q if isinstance(x, dict) and 'formats' in x and 'gguf' in x['formats'])
+        if gguf_cnt:
+            out.append(f"GGUF x{gguf_cnt}")
+        other = []
         for x in q:
-            if isinstance(x, dict) and x.get("format") == "bitsandbytes":
-                bits = x.get("bits")
-                method = (x.get("method") or "").upper()
-                if bits:
-                    out.append(f"{bits}-bit {method}" if method else f"{bits}-bit")
+            if isinstance(x, dict) and 'formats' in x:
+                for f in x['formats']:
+                    if f != 'gguf':
+                        other.append(f)
+        if other:
+            other_unique = sorted(set(other))
+            out.append(", ".join(other_unique))
+        return " | ".join(out)
+    except Exception:
+        return ""
 
-        # De-duplicate while preserving order
-        seen, cleaned = set(), []
-        for item in out:
-            if item not in seen:
-                cleaned.append(item)
-                seen.add(item)
-        return ", ".join(cleaned)
+
+def _safe_json(v):
+    try:
+        return json.dumps(v, ensure_ascii=False)
     except Exception:
         return ""
 
 
 def _preprocess_models_df(models_df: pd.DataFrame) -> pd.DataFrame:
-    """Prepare dataframe for display: add formatted fields, keep raw for selection."""
+    """Prepare dataframe for display with the required columns only."""
     df = models_df.copy()
+
     # Ensure expected columns exist
-    for col in ["name", "type", "family", "source", "license", "quantizations", "task_type"]:
+    for col in ["name", "family", "source", "params", "quantizations"]:
         if col not in df.columns:
             df[col] = ""
 
-    # Human-friendly display columns
+    # Derived display columns
     df["quantizations_display"] = df["quantizations"].apply(_format_quantizations)
-    df["task_type_display"] = df["task_type"].apply(
-        lambda v: ", ".join(v) if isinstance(v, (list, tuple)) else (v or "")
-    )
-
-    # Keep a JSON-encoded raw column (hidden) so selection preserves metadata
-    def _safe_json(v):
-        try:
-            return json.dumps(v, ensure_ascii=False)
-        except Exception:
-            return ""
-
     df["quantizations_raw"] = df["quantizations"].apply(_safe_json)
 
-    display_cols = [
-        "name", "type", "family", "source", "license",
-        "task_type_display", "quantizations_display", "quantizations_raw"
-    ]
+    display_cols = ["name", "source", "family", "params", "quantizations_display", "quantizations_raw"]
     existing = [c for c in display_cols if c in df.columns]
     return df[existing]
 
 
 def aggrid_model_picker(models_df, key="aggrid_model_picker"):
-    """
-    Show models with search, filters, pagination, and clean columns.
-    Returns the selected row as dict (includes hidden raw fields) or None.
-    """
+    """Show models with search and a *single* Family dropdown. Return the selected row as dict or None."""
     df = _preprocess_models_df(models_df)
 
-    # ---- Filters above the grid
-    c1, c2, c3, c4 = st.columns([1.1, 1, 1, 1.2])
+    # ---- Controls above the grid
+    c1, c2 = st.columns([1.3, 1])
     with c1:
         q = st.text_input("Search", placeholder="name, family, source…", key=f"{key}_search")
     with c2:
-        types = sorted([x for x in df["type"].dropna().unique() if x != ""])
-        sel_types = st.multiselect("Type", types, default=[], key=f"{key}_type")
-    with c3:
-        families = sorted([x for x in df["family"].dropna().unique() if x != ""])
-        sel_fams = st.multiselect("Family", families, default=[], key=f"{key}_family")
-    with c4:
-        sources = sorted([x for x in df["source"].dropna().unique() if x != ""])
-        sel_srcs = st.multiselect("Source", sources, default=[], key=f"{key}_source")
+        families = ["(All)"] + sorted([x for x in df["family"].dropna().unique() if x != ""])  # dropdown
+        sel_family = st.selectbox("Family", options=families, index=0, key=f"{key}_family")
 
-    # Apply filters
-    fdf = df
+    # ---- Filtering
+    fdf = df.copy()
     if q:
         ql = q.lower()
-        mask = (
-            fdf["name"].astype(str).str.lower().str.contains(ql)
-            | fdf["family"].astype(str).str.lower().str.contains(ql)
-            | fdf["source"].astype(str).str.lower().str.contains(ql)
-            | fdf["task_type_display"].astype(str).str.lower().str.contains(ql)
-        )
-        fdf = fdf[mask]
-    if sel_types:
-        fdf = fdf[fdf["type"].isin(sel_types)]
-    if sel_fams:
-        fdf = fdf[fdf["family"].isin(sel_fams)]
-    if sel_srcs:
-        fdf = fdf[fdf["source"].isin(sel_srcs)]
+        fdf = fdf[fdf[["name", "family", "source"]].apply(lambda r: r.astype(str).str.lower().str.contains(ql).any(), axis=1)]
+    if sel_family and sel_family != "(All)":
+        fdf = fdf[fdf["family"] == sel_family]
 
     # ---- AgGrid config
     gb = GridOptionsBuilder.from_dataframe(fdf)
-    gb.configure_default_column(
-        resizable=True, filter=True, sortable=True, floatingFilter=True,
-        wrapText=True, autoHeight=True,
-    )
+    gb.configure_default_column(resizable=True, filter=True, sortable=True, floatingFilter=True, wrapText=True, autoHeight=True)
     gb.configure_selection(selection_mode="single", use_checkbox=True)
     gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=15)
     gb.configure_side_bar()  # show filter/sort panel
+
     gb.configure_column("name", pinned="left", width=320)
-    gb.configure_column("task_type_display", header_name="task_type")
     gb.configure_column("quantizations_display", header_name="quantizations", tooltipField="quantizations_display")
-    gb.configure_column("quantizations_raw", header_name="quantizations_raw", hide=True)  # keep raw, hide in UI
+    gb.configure_column("quantizations_raw", header_name="quantizations_raw", hide=True)  # keep raw for selection
 
     grid_return = AgGrid(
         fdf,
