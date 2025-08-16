@@ -2,11 +2,13 @@
 import json
 import pandas as pd
 import streamlit as st
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, JsCode
+
+
+BASE_LABEL = "Base (no quantization)"
 
 
 def _format_quantizations(q):
-    """Return a compact, human-friendly quantization summary string."""
     try:
         if not q:
             return ""
@@ -37,110 +39,127 @@ def _safe_json(v):
         return ""
 
 
+def _labels_and_map(quant_list):
+    labels = [BASE_LABEL]
+    mapping = {BASE_LABEL: None}
+    for q in (quant_list or []):
+        if isinstance(q, dict):
+            repo = q.get("repo") or ""
+            fmts = q.get("formats") or []
+            label = repo if repo else (", ".join(fmts) if fmts else "Quantized")
+            # ensure uniqueness if duplicate labels
+            orig = label
+            i = 2
+            while label in mapping:
+                label = f"{orig} ({i})"
+                i += 1
+            labels.append(label)
+            mapping[label] = q
+    return labels, mapping
+
+
 def _preprocess_models_df(models_df: pd.DataFrame) -> pd.DataFrame:
-    """Prepare dataframe for display with the required columns only."""
     df = models_df.copy()
     for col in ["name", "family", "source", "params", "quantizations"]:
         if col not in df.columns:
             df[col] = ""
+    # Summary text
     df["quantizations_display"] = df["quantizations"].apply(_format_quantizations)
+    # Raw + editor options
     df["quantizations_raw"] = df["quantizations"].apply(_safe_json)
-    display_cols = ["name", "source", "family", "params", "quantizations_display", "quantizations_raw"]
-    existing = [c for c in display_cols if c in df.columns]
-    return df[existing]
+
+    # Build per-row options + mapping + default choice
+    labels_series = []
+    mapping_series = []
+    for _, row in df.iterrows():
+        qlist = row.get("quantizations") or []
+        labels, mapping = _labels_and_map(qlist if isinstance(qlist, list) else [])
+        labels_series.append(labels)
+        mapping_series.append(_safe_json(mapping))
+    df["quant_options"] = labels_series              # list[str] per row (used by JS)
+    df["quant_map"] = mapping_series                 # json map label -> entry (hidden)
+    df["quant_choice"] = BASE_LABEL                  # editable value shown to user
+
+    display_cols = ["name", "source", "family", "params", "quant_choice", "quantizations_display", "quant_options", "quant_map"]
+    return df[display_cols]
 
 
-def aggrid_model_picker(models_df, key="aggrid_model_picker"):
-    """Show models with search and a *single* Family dropdown. Return the selected row as dict or None."""
+def aggrid_model_picker_with_row_dropdown(models_df, key="aggrid_model_picker_row"):
     df = _preprocess_models_df(models_df)
+
+    # Controls: Search + Family
     c1, c2 = st.columns([1.3, 1])
     with c1:
         q = st.text_input("Search", placeholder="name, family, source…", key=f"{key}_search")
     with c2:
-        families = ["(All)"] + sorted([x for x in df["family"].dropna().unique() if x != ""])  # dropdown
+        families = ["(All)"] + sorted([x for x in df["family"].dropna().unique() if x != ""])
         sel_family = st.selectbox("Family", options=families, index=0, key=f"{key}_family")
+
     fdf = df.copy()
     if q:
         ql = q.lower()
         fdf = fdf[fdf[["name", "family", "source"]].apply(lambda r: r.astype(str).str.lower().str.contains(ql).any(), axis=1)]
     if sel_family and sel_family != "(All)":
         fdf = fdf[fdf["family"] == sel_family]
+
+    # JS function: per-row select options from quant_options
+    editor_params_fn = JsCode(
+        """function(params) {
+              return { values: params.data.quant_options || ["Base (no quantization)"] };
+            }"""
+    )
+
     gb = GridOptionsBuilder.from_dataframe(fdf)
     gb.configure_default_column(resizable=True, filter=True, sortable=True, floatingFilter=True, wrapText=True, autoHeight=True)
     gb.configure_selection(selection_mode="single", use_checkbox=True)
     gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=15)
     gb.configure_side_bar()
     gb.configure_column("name", pinned="left", width=320)
+    gb.configure_column("quant_choice", header_name="quantization", editable=True, cellEditor="agSelectCellEditor", cellEditorParams=editor_params_fn)
     gb.configure_column("quantizations_display", header_name="quantizations", tooltipField="quantizations_display")
-    gb.configure_column("quantizations_raw", header_name="quantizations_raw", hide=True)
+    gb.configure_column("quant_options", hide=True)
+    gb.configure_column("quant_map", hide=True)
+
     grid_return = AgGrid(
         fdf,
         gridOptions=gb.build(),
-        update_mode=GridUpdateMode.SELECTION_CHANGED,
+        update_mode=GridUpdateMode.MODEL_CHANGED,  # capture edits
         allow_unsafe_jscode=True,
         key=key,
         height=520,
         fit_columns_on_grid_load=True,
+        # data_return_mode = 'AS_INPUT' is default in newer versions; keep to ensure edits come back
     )
+
+    # Selected row (with current quant_choice)
     sel = grid_return.get("selected_rows")
     if isinstance(sel, pd.DataFrame):
-        return sel.iloc[0].to_dict() if not sel.empty else None
-    if isinstance(sel, list) and sel:
-        return sel[0]
-    return None
+        sel_row = sel.iloc[0].to_dict() if not sel.empty else None
+    elif isinstance(sel, list) and sel:
+        sel_row = sel[0]
+    else:
+        sel_row = None
 
-
-def select_model_with_quantization(models_df, key="model_and_quantization"):
-    """Two-step selection: pick a base model row, then choose a quantized variant.
-    
-    Returns a dict like:
-      {
-        'name': ...,
-        'source': ...,
-        'family': ...,
-        'params': ...,
-        'selection': {
-            'variant': 'base' | 'quantized',
-            'quantization_repo': <repo or None>,
-            'formats': <list or None>,
-        }
-      }
-    or None if nothing selected.
-    """
-    row = aggrid_model_picker(models_df, key=f"{key}_picker")
-    if not row:
+    if not sel_row:
         return None
 
-    st.markdown("---")
-    st.markdown(f"### Selected base model\n**{row.get('name','')}**  ")  # brief confirmation
-
-    # Build dropdown: Base + quantizations
+    # Resolve selected label -> mapping
     try:
-        quant_list = json.loads(row.get("quantizations_raw", "[]"))
-        # Build label -> entry map
-        options = [("Base (no quantization)", None)]
-        for q in quant_list:
-            if isinstance(q, dict):
-                repo = q.get("repo") or ""
-                fmts = q.get("formats") or []
-                label = repo if repo else (", ".join(fmts) if fmts else "Quantized" )
-                options.append((label, q))
+        mapping = json.loads(sel_row.get("quant_map", "{}"))
     except Exception:
-        options = [("Base (no quantization)", None)]
+        mapping = {}
+    label = sel_row.get("quant_choice") or BASE_LABEL
+    entry = mapping.get(label)
 
-    labels = [lbl for lbl, _ in options]
-    sel_label = st.selectbox("Quantized version", options=labels, key=f"{key}_quant_sel")
-    sel_entry = dict(options)[sel_label]
-
-    selection = {
-        "name": row.get("name"),
-        "source": row.get("source"),
-        "family": row.get("family"),
-        "params": row.get("params"),
+    return {
+        "name": sel_row.get("name"),
+        "source": sel_row.get("source"),
+        "family": sel_row.get("family"),
+        "params": sel_row.get("params"),
         "selection": {
-            "variant": "quantized" if sel_entry else "base",
-            "quantization_repo": (sel_entry or {}).get("repo") if isinstance(sel_entry, dict) else None,
-            "formats": (sel_entry or {}).get("formats") if isinstance(sel_entry, dict) else None,
+            "variant": "quantized" if entry else "base",
+            "quantization_repo": (entry or {}).get("repo") if isinstance(entry, dict) else None,
+            "formats": (entry or {}).get("formats") if isinstance(entry, dict) else None,
+            "label": label,
         },
     }
-    return selection
