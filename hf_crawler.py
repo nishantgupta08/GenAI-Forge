@@ -314,10 +314,10 @@ def crawl_models(
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--out", default="models.json", help="Output JSON path")
+    p.add_argument("--out", default="models_config.json", help="Output JSON path")
     p.add_argument("--min-downloads", default="100_000",
                    help="Base model minimum downloads (int, '50k', '2M', etc.)")
-    p.add_argument("--quant-min-downloads", default="5_000",
+    p.add_argument("--quant-min-downloads", default="500",
                    help="Quantized repo minimum downloads (int, '5k', etc.)")
     p.add_argument("--limit", type=int, default=200, help="Per-query search limit (HF API)")
     args = p.parse_args()
