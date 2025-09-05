@@ -80,3 +80,88 @@ def pdf_upload_widget(label="Upload a PDF file", key="pdf_upload"):
     """Renders a file uploader for PDF files and returns the uploaded file object."""
     return st.file_uploader(label, type=["pdf"], key=key)
 
+
+def document_type_selector(key="document_type"):
+    """Renders a document type selector with predefined categories."""
+    document_types = {
+        "Healthcare": {
+            "description": "Medical documents, clinical reports, research papers",
+            "icon": "🏥",
+            "encoding_params": {
+                "pooling": "cls",
+                "normalize": "l2",
+                "max_length": 1024
+            }
+        },
+        "Fintech": {
+            "description": "Financial reports, trading documents, regulatory filings",
+            "icon": "💰",
+            "encoding_params": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024
+            }
+        },
+        "Legal": {
+            "description": "Contracts, legal briefs, case law documents",
+            "icon": "⚖️",
+            "encoding_params": {
+                "pooling": "cls",
+                "normalize": "l2",
+                "max_length": 2048
+            }
+        },
+        "Technology": {
+            "description": "Technical documentation, API docs, code documentation",
+            "icon": "💻",
+            "encoding_params": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024
+            }
+        },
+        "Education": {
+            "description": "Academic papers, textbooks, educational materials",
+            "icon": "📚",
+            "encoding_params": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024
+            }
+        },
+        "General": {
+            "description": "General purpose documents, news articles, web content",
+            "icon": "📄",
+            "encoding_params": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024
+            }
+        }
+    }
+    
+    # Create options with icons and descriptions
+    options = []
+    for doc_type, config in document_types.items():
+        options.append(f"{config['icon']} {doc_type}")
+    
+    selected_option = st.selectbox(
+        "Select Document Type:",
+        options=options,
+        key=key,
+        help="Choose the domain type of your documents for optimized encoding"
+    )
+    
+    # Extract the document type from the selected option
+    selected_type = selected_option.split(" ", 1)[1] if " " in selected_option else selected_option
+    
+    # Display description and encoding parameters
+    if selected_type in document_types:
+        config = document_types[selected_type]
+        st.info(f"**{config['description']}**")
+        
+        with st.expander("Domain-specific Encoding Parameters", expanded=False):
+            st.json(config['encoding_params'])
+    
+    return selected_type, document_types.get(selected_type, {}).get('encoding_params', {})
+

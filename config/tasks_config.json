@@ -141,9 +141,9 @@
       }
     },
   
-    "Document Embedding (Retrieval Indexing)": {
+    "Document Indexing": {
       "blocks": ["preprocessing", "encoding"],
-      "description": "Generate robust embeddings for search and retrieval",
+      "description": "Index documents with domain-specific embeddings for search and retrieval",
       "overrides": {
         "preprocessing": {
           "splitter_type": {

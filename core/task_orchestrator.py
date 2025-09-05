@@ -234,3 +234,128 @@ class TaskOrchestrator:
         )
         answer = encoder_decoder.run(processed_text)
         return answer
+
+    def run_document_indexing(
+        self,
+        files,
+        doc_type: str,
+        encoder_name: str,
+        encoding_params: dict = None,
+        preprocessing_config: dict = None
+    ) -> dict:
+        """
+        Run document indexing pipeline for multiple files.
+
+        Args:
+            files: List of uploaded file objects.
+            doc_type (str): Document domain type (e.g., 'Healthcare', 'Fintech').
+            encoder_name (str): Encoder model name.
+            encoding_params (dict): Encoding parameters (pooling, normalization, etc.).
+            preprocessing_config (dict): Text preprocessing configuration.
+
+        Returns:
+            dict: Indexing results with statistics and metadata.
+        """
+        encoding_params = encoding_params or {}
+        preprocessing_config = preprocessing_config or {}
+        
+        results = {
+            "total_files": len(files),
+            "successful_files": 0,
+            "failed_files": 0,
+            "total_chunks": 0,
+            "total_embeddings": 0,
+            "document_type": doc_type,
+            "encoder_model": encoder_name,
+            "file_results": [],
+            "indexing_metadata": {
+                "encoding_params": encoding_params,
+                "preprocessing_config": preprocessing_config
+            }
+        }
+        
+        # Create encoder with document type
+        encoder_instance = LangchainEncoder(
+            model_name=encoder_name,
+            document_type=doc_type,
+            **encoding_params
+        )
+        
+        # Create vector store builder
+        vectorstore_builder = VectorStoreBuilder(encoder_instance.get_encoder())
+        
+        all_documents = []
+        all_embeddings = []
+        
+        for file in files:
+            file_result = {
+                "filename": file.name if hasattr(file, 'name') else "unknown",
+                "size": file.size if hasattr(file, 'size') else 0,
+                "status": "processing",
+                "chunks": 0,
+                "embeddings": 0,
+                "error": None
+            }
+            
+            try:
+                # Extract text from file
+                raw_text = get_text_from_file(file)
+                
+                # Apply preprocessing
+                preprocessor = LangchainPreprocessor(**preprocessing_config)
+                chunks = preprocessor.run(raw_text)
+                
+                # Create documents with metadata
+                documents = create_documents_from_chunks(chunks, {
+                    "source": file.name if hasattr(file, 'name') else "uploaded_file",
+                    "document_type": doc_type,
+                    "preprocessing": preprocessing_config,
+                    "task": "Document Indexing"
+                })
+                
+                # Generate embeddings
+                document_texts = [doc.page_content for doc in documents]
+                embeddings = encoder_instance.run(document_texts)
+                
+                # Store results
+                all_documents.extend(documents)
+                all_embeddings.extend(embeddings)
+                
+                file_result.update({
+                    "status": "success",
+                    "chunks": len(chunks),
+                    "embeddings": len(embeddings)
+                })
+                
+                results["successful_files"] += 1
+                results["total_chunks"] += len(chunks)
+                results["total_embeddings"] += len(embeddings)
+                
+            except Exception as e:
+                file_result.update({
+                    "status": "failed",
+                    "error": str(e)
+                })
+                results["failed_files"] += 1
+            
+            results["file_results"].append(file_result)
+        
+        # Build vector store with all documents
+        if all_documents:
+            try:
+                document_texts = [doc.page_content for doc in all_documents]
+                vectorstore = vectorstore_builder.build_vectorstore(document_texts)
+                
+                results["vectorstore_status"] = "success"
+                results["vectorstore_info"] = {
+                    "total_documents": len(all_documents),
+                    "total_embeddings": len(all_embeddings)
+                }
+                
+            except Exception as e:
+                results["vectorstore_status"] = "failed"
+                results["vectorstore_error"] = str(e)
+        else:
+            results["vectorstore_status"] = "no_documents"
+        
+        return results

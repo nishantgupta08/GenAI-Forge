@@ -15,14 +15,17 @@ class LangchainEncoder:
     def __init__(
         self,
         model_name: str,
+        document_type: Optional[str] = None,
         **encoding_params: Optional[Dict[str, Any]]
     ):
         """
         Args:
             model_name (str): HuggingFace model ID or path.
+            document_type (str): Document domain type (e.g., 'Healthcare', 'Fintech', 'Legal')
             encoding_params (dict): Custom params like pooling, normalization, device, etc.
         """
         self.model_name = model_name
+        self.document_type = document_type
 
         # Defaults
         defaults = {
@@ -31,6 +34,11 @@ class LangchainEncoder:
             "layer": -1,
             "device": "cuda" if torch.cuda.is_available() else "cpu"
         }
+
+        # Apply document type-specific defaults
+        if document_type:
+            domain_defaults = self._get_domain_specific_params(document_type)
+            defaults.update(domain_defaults)
 
         # Merge defaults with passed encoding params
         self.encoding_params = {**defaults, **(encoding_params or {})}
@@ -75,6 +83,57 @@ class LangchainEncoder:
             except Exception as e:
                 # If device placement fails, continue with default device
                 print(f"Warning: Could not move model to {self.device}: {e}")
+
+    def _get_domain_specific_params(self, document_type: str) -> Dict[str, Any]:
+        """
+        Get domain-specific encoding parameters based on document type.
+        
+        Args:
+            document_type (str): Document domain type
+            
+        Returns:
+            Dict[str, Any]: Domain-specific parameter defaults
+        """
+        domain_params = {
+            "Healthcare": {
+                "pooling": "cls",
+                "normalize": "l2",
+                "max_length": 1024,
+                "batch_size": 32
+            },
+            "Fintech": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024,
+                "batch_size": 64
+            },
+            "Legal": {
+                "pooling": "cls",
+                "normalize": "l2",
+                "max_length": 2048,
+                "batch_size": 16
+            },
+            "Technology": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024,
+                "batch_size": 64
+            },
+            "Education": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024,
+                "batch_size": 32
+            },
+            "General": {
+                "pooling": "mean",
+                "normalize": "l2",
+                "max_length": 1024,
+                "batch_size": 64
+            }
+        }
+        
+        return domain_params.get(document_type, {})
 
     def _resolve_device(self, device_param: str) -> str:
         """

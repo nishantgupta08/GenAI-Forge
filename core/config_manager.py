@@ -58,7 +58,8 @@ class ConfigManager:
             "Text Classification": "🏷️",
             "Sentiment Analysis": "😊",
             "Named Entity Recognition": "👤",
-            "Text Generation": "✍️"
+            "Text Generation": "✍️",
+            "Document Indexing": "📚"
         }
         return icons.get(task_name, "🤖")
     
