@@ -920,11 +920,11 @@ def _create_chunk_overlay_visualization(doc, key):
         """, unsafe_allow_html=True)
 
 
-def _highlight_text_chunks_on_pdf(pdf_file, chunks, pages_limit=2, per_chunk_snippet_len=40):
-    """Render first pages of a text-based PDF and overlay highlights for chunk snippets.
+def _highlight_text_chunks_on_pdf(pdf_file, chunks, per_chunk_snippet_len=40):
+    """Render text-based PDF with interactive page navigation and overlay highlights.
 
-    We search for the first `per_chunk_snippet_len` characters of each chunk on each page
-    and draw semi-transparent colored rectangles over matches.
+    - Renders the selected page (via page slider) or all pages if toggled
+    - Highlights occurrences of each chunk's opening snippet on the page(s)
     """
     try:
         import fitz  # PyMuPDF
@@ -944,9 +944,16 @@ def _highlight_text_chunks_on_pdf(pdf_file, chunks, pages_limit=2, per_chunk_sni
             (255, 159, 64, 90),   # orange-ish
         ]
 
-        max_pages = min(pages_limit, len(doc))
+        total_pages = len(doc)
+        col_a, col_b = st.columns([2, 1])
+        with col_b:
+            render_all = st.checkbox("Render all pages (may be slow)")
+        with col_a:
+            page_index = st.slider("Page", 1, total_pages, 1, help="Jump to any page")
 
-        for pno in range(max_pages):
+        pages_to_render = range(total_pages) if render_all else [page_index - 1]
+
+        for pno in pages_to_render:
             page = doc[pno]
             mat = fitz.Matrix(2.0, 2.0)
             pix = page.get_pixmap(matrix=mat)
@@ -973,7 +980,7 @@ def _highlight_text_chunks_on_pdf(pdf_file, chunks, pages_limit=2, per_chunk_sni
 
             # Composite overlay onto image
             highlighted = Image.alpha_composite(img, overlay)
-            st.image(highlighted, caption=f"Highlighted: Page {pno + 1}", use_column_width=True)
+            st.image(highlighted, caption=f"Highlighted: Page {pno + 1} / {total_pages}", use_column_width=True)
 
         doc.close()
 
