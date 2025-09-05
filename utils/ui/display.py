@@ -733,9 +733,20 @@ def _text_pdf_visualizer(pdf_file, key):
         preprocessor = LangchainPreprocessor(**pattern_config)
         chunks = preprocessor.run(raw_text)
         
-        # Display colored chunk text visualization (no PDF rendering)
+        # Display colored chunk text visualization
         st.markdown(f"**{selected_pattern} Pattern** - {len(chunks)} chunks generated")
         _render_colored_chunks(chunks, title="Colored Chunk View (Text PDF)")
+
+        # Optional: highlight chunks directly on the PDF pages (best-effort)
+        with st.expander("🔍 Highlight chunks on PDF pages (beta)", expanded=False):
+            enable_pdf_highlight = st.checkbox(
+                "Highlight chunks on rendered PDF pages",
+                value=False,
+                key=f"{key}_enable_pdf_highlight"
+            )
+            if enable_pdf_highlight:
+                st.caption("We highlight occurrences of each chunk's opening snippet on the PDF. This is a best-effort visual aid and may not mark every occurrence if the chunk spans complex layouts.")
+                _highlight_text_chunks_on_pdf(pdf_file, chunks)
         
         # Chunk selection interface
         selected_chunks = _chunk_selection_interface(chunks, pattern_config, key)
@@ -907,6 +918,69 @@ def _create_chunk_overlay_visualization(doc, key):
             <strong>Chunk {chunk['id']}</strong>: {chunk['text']}
         </div>
         """, unsafe_allow_html=True)
+
+
+def _highlight_text_chunks_on_pdf(pdf_file, chunks, pages_limit=2, per_chunk_snippet_len=40):
+    """Render first pages of a text-based PDF and overlay highlights for chunk snippets.
+
+    We search for the first `per_chunk_snippet_len` characters of each chunk on each page
+    and draw semi-transparent colored rectangles over matches.
+    """
+    try:
+        import fitz  # PyMuPDF
+        from PIL import Image, ImageDraw
+        import io
+
+        # Open PDF
+        doc = fitz.open(stream=pdf_file.getvalue(), filetype="pdf")
+
+        # Palette for highlights
+        palette = [
+            (255, 99, 132, 90),   # red-ish
+            (75, 192, 192, 90),   # teal-ish
+            (54, 162, 235, 90),   # blue-ish
+            (255, 205, 86, 90),   # yellow-ish
+            (153, 102, 255, 90),  # purple-ish
+            (255, 159, 64, 90),   # orange-ish
+        ]
+
+        max_pages = min(pages_limit, len(doc))
+
+        for pno in range(max_pages):
+            page = doc[pno]
+            mat = fitz.Matrix(2.0, 2.0)
+            pix = page.get_pixmap(matrix=mat)
+            img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGBA")
+            overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+            draw = ImageDraw.Draw(overlay)
+
+            # For each chunk, search for its opening snippet on this page
+            for i, chunk in enumerate(chunks):
+                snippet = (chunk[:per_chunk_snippet_len] or "").strip()
+                if not snippet:
+                    continue
+                try:
+                    rects = page.search_for(snippet)
+                except Exception:
+                    rects = []
+                color = palette[i % len(palette)]
+
+                # Draw rectangles for all matches
+                for r in rects:
+                    # Transform PDF rect to image coordinates (already scaled by mat)
+                    x0, y0, x1, y1 = r.x0 * mat.x, r.y0 * mat.y, r.x1 * mat.x, r.y1 * mat.y
+                    draw.rectangle([x0, y0, x1, y1], fill=color, outline=(color[0], color[1], color[2], 180), width=3)
+
+            # Composite overlay onto image
+            highlighted = Image.alpha_composite(img, overlay)
+            st.image(highlighted, caption=f"Highlighted: Page {pno + 1}", use_column_width=True)
+
+        doc.close()
+
+    except ImportError:
+        st.warning("PyMuPDF not installed. Run: pip install PyMuPDF to enable PDF highlighting.")
+    except Exception as e:
+        st.warning(f"PDF highlighting failed: {e}")
 
 
 def _fallback_pdf_display(pdf_file):
