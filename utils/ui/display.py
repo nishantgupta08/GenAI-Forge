@@ -326,3 +326,237 @@ def advanced_chunking_options(key_prefix="advanced_chunking"):
     
     return None
 
+
+def visual_chunking_selector(uploaded_files, key="visual_chunking"):
+    """Renders a visual chunking interface where users can select example chunks to determine pattern."""
+    
+    if not uploaded_files:
+        return None, {}
+    
+    st.subheader("👁️ Visual Chunking Pattern Selection")
+    st.markdown("**Select example chunks to automatically determine the best chunking pattern for your documents**")
+    
+    # Get the first uploaded file for preview
+    preview_file = uploaded_files[0]
+    
+    # Extract text from the file
+    try:
+        from utils.document_utils import get_text_from_file
+        raw_text = get_text_from_file(preview_file)
+        
+        # Limit text for preview (first 5000 characters)
+        preview_text = raw_text[:5000] + "..." if len(raw_text) > 5000 else raw_text
+        
+        st.info(f"📄 **Preview from:** {preview_file.name} (showing first 5000 characters)")
+        
+    except Exception as e:
+        st.error(f"Could not extract text from {preview_file.name}: {str(e)}")
+        return None, {}
+    
+    # Generate different chunking patterns for preview
+    chunking_patterns = {
+        "Auto (Recommended)": {
+            "splitter_type": "recursive",
+            "chunk_size": 1000,
+            "chunk_overlap": 150,
+            "description": "Smart chunking that understands document structure"
+        },
+        "Pages/Slides": {
+            "splitter_type": "page", 
+            "chunk_size": 2000,
+            "chunk_overlap": 0,
+            "description": "One chunk per page or slide"
+        },
+        "Sentences": {
+            "splitter_type": "sentence",
+            "chunk_size": 800,
+            "chunk_overlap": 100,
+            "description": "Keeps sentences intact"
+        },
+        "Fixed Size": {
+            "splitter_type": "character",
+            "chunk_size": 500,
+            "chunk_overlap": 50,
+            "description": "Fixed character-based chunks"
+        }
+    }
+    
+    # Create chunks for each pattern
+    pattern_chunks = {}
+    for pattern_name, config in chunking_patterns.items():
+        try:
+            from components.preprocessor import LangchainPreprocessor
+            preprocessor = LangchainPreprocessor(**config)
+            chunks = preprocessor.run(preview_text)
+            pattern_chunks[pattern_name] = chunks[:5]  # Show first 5 chunks
+        except Exception as e:
+            st.warning(f"Could not generate chunks for {pattern_name}: {str(e)}")
+            pattern_chunks[pattern_name] = []
+    
+    # Display chunking patterns with selectable chunks
+    selected_chunks = []
+    selected_pattern = None
+    
+    for pattern_name, chunks in pattern_chunks.items():
+        if not chunks:
+            continue
+            
+        with st.expander(f"📋 {pattern_name} - {chunking_patterns[pattern_name]['description']}", expanded=pattern_name == "Auto (Recommended)"):
+            
+            # Pattern description
+            st.caption(f"💡 {chunking_patterns[pattern_name]['description']}")
+            
+            # Show chunks with selection
+            for i, chunk in enumerate(chunks):
+                chunk_id = f"{pattern_name}_{i}"
+                
+                col1, col2 = st.columns([1, 20])
+                
+                with col1:
+                    is_selected = st.checkbox(
+                        "✓", 
+                        key=f"chunk_select_{chunk_id}",
+                        help=f"Select this chunk as an example"
+                    )
+                    
+                    if is_selected:
+                        selected_chunks.append({
+                            "pattern": pattern_name,
+                            "chunk_index": i,
+                            "content": chunk,
+                            "config": chunking_patterns[pattern_name]
+                        })
+                
+                with col2:
+                    # Display chunk with highlighting
+                    chunk_preview = chunk[:300] + "..." if len(chunk) > 300 else chunk
+                    
+                    if is_selected:
+                        st.markdown(f"**Chunk {i+1}** (Selected)")
+                        st.success(chunk_preview)
+                    else:
+                        st.markdown(f"**Chunk {i+1}**")
+                        st.text(chunk_preview)
+                
+                st.markdown("---")
+    
+    # Pattern selection based on selected chunks
+    if selected_chunks:
+        # Count selections by pattern
+        pattern_counts = {}
+        for chunk in selected_chunks:
+            pattern = chunk["pattern"]
+            pattern_counts[pattern] = pattern_counts.get(pattern, 0) + 1
+        
+        # Find most selected pattern
+        if pattern_counts:
+            selected_pattern = max(pattern_counts, key=pattern_counts.get)
+            selected_config = chunking_patterns[selected_pattern]
+            
+            st.success(f"🎯 **Detected Pattern:** {selected_pattern}")
+            st.info(f"Based on your selections, we recommend: **{selected_pattern}**")
+            
+            # Show selected chunks summary
+            with st.expander("📊 Selected Chunks Summary", expanded=True):
+                st.write(f"**Pattern:** {selected_pattern}")
+                st.write(f"**Selected Chunks:** {len(selected_chunks)}")
+                st.write(f"**Configuration:**")
+                st.json(selected_config)
+            
+            return selected_pattern, selected_config
+    
+    # Default fallback
+    if not selected_chunks:
+        st.info("👆 **Select some example chunks above to automatically determine the best chunking pattern**")
+        return "Auto (Recommended)", chunking_patterns["Auto (Recommended)"]
+    
+    return selected_pattern, chunking_patterns.get(selected_pattern, chunking_patterns["Auto (Recommended)"])
+
+
+def chunking_pattern_visualizer(chunks, pattern_name, max_chunks=5):
+    """Visualize chunks in a nice format for pattern comparison."""
+    
+    st.subheader(f"📊 {pattern_name} Pattern Preview")
+    
+    for i, chunk in enumerate(chunks[:max_chunks]):
+        with st.container():
+            st.markdown(f"**Chunk {i+1}**")
+            
+            # Chunk content with syntax highlighting
+            st.code(chunk, language="text")
+            
+            # Chunk metadata
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Length", f"{len(chunk)} chars")
+            with col2:
+                st.metric("Words", f"{len(chunk.split())} words")
+            with col3:
+                st.metric("Lines", f"{len(chunk.splitlines())} lines")
+            
+            st.markdown("---")
+    
+    if len(chunks) > max_chunks:
+        st.info(f"Showing first {max_chunks} chunks out of {len(chunks)} total chunks")
+
+
+def chunking_pattern_comparison(uploaded_files, key="pattern_comparison"):
+    """Show side-by-side comparison of different chunking patterns."""
+    
+    if not uploaded_files:
+        return None
+    
+    st.subheader("🔍 Chunking Pattern Comparison")
+    st.markdown("**Compare how different chunking methods split your document**")
+    
+    # Get preview text
+    preview_file = uploaded_files[0]
+    try:
+        from utils.document_utils import get_text_from_file
+        raw_text = get_text_from_file(preview_file)
+        preview_text = raw_text[:3000] + "..." if len(raw_text) > 3000 else raw_text
+    except Exception as e:
+        st.error(f"Could not extract text: {str(e)}")
+        return None
+    
+    # Define patterns to compare
+    patterns = {
+        "Auto": {"splitter_type": "recursive", "chunk_size": 1000, "chunk_overlap": 150},
+        "Pages": {"splitter_type": "page", "chunk_size": 2000, "chunk_overlap": 0},
+        "Sentences": {"splitter_type": "sentence", "chunk_size": 800, "chunk_overlap": 100},
+        "Fixed": {"splitter_type": "character", "chunk_size": 500, "chunk_overlap": 50}
+    }
+    
+    # Generate chunks for each pattern
+    pattern_results = {}
+    for name, config in patterns.items():
+        try:
+            from components.preprocessor import LangchainPreprocessor
+            preprocessor = LangchainPreprocessor(**config)
+            chunks = preprocessor.run(preview_text)
+            pattern_results[name] = {
+                "chunks": chunks[:3],  # Show first 3 chunks
+                "total_chunks": len(chunks),
+                "config": config
+            }
+        except Exception as e:
+            st.warning(f"Could not generate {name} chunks: {str(e)}")
+            pattern_results[name] = {"chunks": [], "total_chunks": 0, "config": config}
+    
+    # Display comparison in columns
+    cols = st.columns(len(pattern_results))
+    
+    for i, (pattern_name, result) in enumerate(pattern_results.items()):
+        with cols[i]:
+            st.markdown(f"**{pattern_name} Pattern**")
+            st.caption(f"Total chunks: {result['total_chunks']}")
+            
+            # Show first few chunks
+            for j, chunk in enumerate(result["chunks"]):
+                with st.expander(f"Chunk {j+1}", expanded=False):
+                    chunk_preview = chunk[:200] + "..." if len(chunk) > 200 else chunk
+                    st.text(chunk_preview)
+                    st.caption(f"{len(chunk)} chars, {len(chunk.split())} words")
+    
+    return pattern_results
+

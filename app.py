@@ -5,7 +5,7 @@ import os
 
 from core.config_manager import ConfigManager
 from utils.ui import aggrid_model_picker, create_preprocessing_table, create_encoding_table, create_decoding_table
-from utils.ui.display import document_type_selector, pdf_upload_widget, chunking_preset_selector, advanced_chunking_options
+from utils.ui.display import document_type_selector, pdf_upload_widget, chunking_preset_selector, advanced_chunking_options, visual_chunking_selector, chunking_pattern_comparison
 
 # --- Initialize configuration manager ---
 config_manager = ConfigManager()
@@ -51,6 +51,13 @@ if uploaded_files:
     st.subheader("✂️ Document Chunking")
     st.markdown("Choose how to split your documents into searchable chunks")
     
+    # Chunking method selection
+    chunking_method = st.radio(
+        "Choose chunking method:",
+        ["👁️ Visual Selection (Recommended)", "📋 Preset Selection", "🔧 Advanced Options"],
+        help="Visual selection lets you see and choose example chunks to automatically determine the best pattern"
+    )
+    
     # Helpful information for consultants
     with st.expander("💡 What is document chunking?", expanded=False):
         st.markdown("""
@@ -62,27 +69,41 @@ if uploaded_files:
         - ⚡ **Faster Processing**: Optimized chunk sizes improve performance  
         - 🎯 **Context Preservation**: Smart chunking keeps related information together
         
-        **Our presets are designed for different document types:**
-        - **Auto**: Works great for most business documents
-        - **Pages/Slides**: Perfect for presentations and scanned PDFs
-        - **Sentences**: Ideal for legal documents and contracts
-        - **Fixed**: Fastest option for quick results
+        **Choose your preferred method:**
+        - **👁️ Visual Selection**: See example chunks and select the ones you like
+        - **📋 Preset Selection**: Choose from predefined patterns
+        - **🔧 Advanced Options**: Fine-tune all parameters manually
         """)
     
-    # Chunking preset selection
-    selected_chunking_preset, chunking_params = chunking_preset_selector(uploaded_files)
+    # Route to appropriate chunking method
+    if chunking_method == "👁️ Visual Selection (Recommended)":
+        # Visual chunking selector
+        selected_chunking_preset, chunking_params = visual_chunking_selector(uploaded_files)
+        final_chunking_params = chunking_params
+        
+    elif chunking_method == "📋 Preset Selection":
+        # Traditional preset selection
+        selected_chunking_preset, chunking_params = chunking_preset_selector(uploaded_files)
+        final_chunking_params = chunking_params
+        
+    else:  # Advanced Options
+        # Advanced options
+        advanced_params = advanced_chunking_options()
+        final_chunking_params = advanced_params if advanced_params else {}
+        selected_chunking_preset = "Custom Advanced"
     
-    # Advanced options (collapsed by default)
-    advanced_params = advanced_chunking_options()
-    
-    # Use advanced params if provided, otherwise use preset params
-    final_chunking_params = advanced_params if advanced_params else chunking_params
+    # Pattern comparison option
+    if chunking_method == "👁️ Visual Selection (Recommended)":
+        show_comparison = st.checkbox("🔍 Show pattern comparison", help="Compare different chunking methods side-by-side")
+        if show_comparison:
+            chunking_pattern_comparison(uploaded_files)
     
     # Display current chunking configuration
     with st.expander("📊 Current Chunking Configuration", expanded=False):
         st.json(final_chunking_params)
 else:
     final_chunking_params = {}
+    selected_chunking_preset = "Auto (Recommended)"
 
 # --- Encoder Model Selection ---
 st.subheader("🤖 Select Encoder Model")
