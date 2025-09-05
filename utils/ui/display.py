@@ -747,6 +747,36 @@ def _text_pdf_visualizer(pdf_file, key):
             if enable_pdf_highlight:
                 st.caption("We highlight occurrences of each chunk's opening snippet on the PDF. This is a best-effort visual aid and may not mark every occurrence if the chunk spans complex layouts.")
                 _highlight_text_chunks_on_pdf(pdf_file, chunks)
+
+        # Optional: create a downloadable highlighted PDF (annotations written into PDF)
+        with st.expander("🖍️ Export highlighted PDF (annotations)", expanded=False):
+            st.caption("Generate a new PDF with in-place highlight annotations for each chunk. Uses multiple representative phrases per chunk for robust matching.")
+            colx, coly = st.columns([1, 1])
+            with colx:
+                min_phrase_len = st.slider("Min phrase length", 10, 120, 30, 5, key=f"{key}_min_phrase")
+            with coly:
+                max_phrase_len = st.slider("Max phrase length", 30, 240, 90, 10, key=f"{key}_max_phrase")
+            add_labels = st.checkbox("Add labels (Chunk N)", value=True, key=f"{key}_add_labels")
+            gen = st.button("Create highlighted PDF", key=f"{key}_gen_highlight")
+            if gen:
+                try:
+                    out_bytes, suggested_name = _build_highlighted_pdf_bytes(
+                        pdf_file,
+                        chunks,
+                        min_phrase_len=min_phrase_len,
+                        max_phrase_len=max_phrase_len,
+                        add_labels=add_labels,
+                    )
+                    st.success("Highlighted PDF generated")
+                    st.download_button(
+                        label="📥 Download highlighted PDF",
+                        data=out_bytes,
+                        file_name=suggested_name,
+                        mime="application/pdf",
+                        key=f"{key}_download_highlighted"
+                    )
+                except Exception as e:
+                    st.error(f"Failed to generate highlighted PDF: {e}")
         
         # Chunk selection interface
         selected_chunks = _chunk_selection_interface(chunks, pattern_config, key)
@@ -1020,6 +1050,108 @@ def _highlight_text_chunks_on_pdf(pdf_file, chunks, per_chunk_snippet_len=40):
         st.warning("PyMuPDF not installed. Run: pip install PyMuPDF to enable PDF highlighting.")
     except Exception as e:
         st.warning(f"PDF highlighting failed: {e}")
+
+
+# -------- In-place PDF annotation export (robust phrase matching) --------
+def _normalize_spaces(s: str) -> str:
+    try:
+        return " ".join((s or "").split())
+    except Exception:
+        return s or ""
+
+
+def _page_text_norm(page) -> str:
+    try:
+        return _normalize_spaces(page.get_text("text") or "")
+    except Exception:
+        return ""
+
+
+def _candidate_phrases(chunk: str, min_len: int = 30, max_len: int = 90, step: int = 10):
+    c = _normalize_spaces(chunk)
+    L = len(c)
+    if L == 0:
+        return []
+    positions = [0, max(0, L // 2 - max_len // 2), max(0, L - max_len)]
+    out = []
+    for pos in positions:
+        for length in range(max_len, min_len - 1, -step):
+            end = min(L, pos + length)
+            start = max(0, end - length)
+            snippet = c[start:end]
+            if len(snippet) >= min_len:
+                out.append(snippet)
+    seen, unique = set(), []
+    for s in out:
+        if s not in seen:
+            seen.add(s)
+            unique.append(s)
+    return unique
+
+
+def _rand_color(seed: int):
+    import random
+    rnd = random.Random(seed)
+    return tuple(0.2 + 0.7 * rnd.random() for _ in range(3))
+
+
+def _build_highlighted_pdf_bytes(pdf_file, chunks, min_phrase_len=30, max_phrase_len=90, add_labels=True):
+    import fitz  # PyMuPDF
+    import tempfile
+    import os
+    import io
+
+    # Open source PDF from uploaded bytes
+    src_bytes = pdf_file.getvalue()
+    doc = fitz.open(stream=src_bytes, filetype="pdf")
+
+    # Cache normalized page texts
+    page_norm_texts = [_page_text_norm(p) for p in doc]
+    total_annots = 0
+
+    for idx, chunk in enumerate(chunks, start=1):
+        if not (chunk and chunk.strip()):
+            continue
+        candidates = _candidate_phrases(chunk, min_len=min_phrase_len, max_len=max_phrase_len)
+        stroke = _rand_color(idx)
+
+        for pno, page in enumerate(doc):
+            page_text = page_norm_texts[pno]
+            for phrase in candidates:
+                if phrase in page_text:
+                    rects = page.search_for(phrase, hit_max=256)
+                    if rects:
+                        for r in rects:
+                            annot = page.add_highlight_annot(r)
+                            try:
+                                annot.set_colors(stroke=stroke, fill=None)
+                            except Exception:
+                                pass
+                            if add_labels:
+                                try:
+                                    annot.set_info(content=f"Chunk {idx}")
+                                except Exception:
+                                    pass
+                            annot.update()
+                            total_annots += 1
+                        break  # next page after first matching phrase
+
+    # Save to bytes
+    with tempfile.NamedTemporaryFile(suffix="_highlighted.pdf", delete=False) as tmp:
+        tmp_name = tmp.name
+    try:
+        doc.save(tmp_name, incremental=False, deflate=True)
+        doc.close()
+        with open(tmp_name, "rb") as f:
+            out_bytes = f.read()
+    finally:
+        try:
+            os.remove(tmp_name)
+        except Exception:
+            pass
+
+    suggested = (pdf_file.name or "document.pdf").rsplit(".", 1)[0] + "_highlighted.pdf"
+    return out_bytes, suggested
 
 
 def _fallback_pdf_display(pdf_file):
