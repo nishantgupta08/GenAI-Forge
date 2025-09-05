@@ -657,19 +657,80 @@ def _display_pdf_with_chunks(pdf_file, chunks, pattern_config, key):
     # PDF display using Streamlit's file display
     st.markdown("### 📄 PDF Document with Chunk Boundaries")
     
-    # Show PDF file
-    st.file_downloader(
-        label="Download PDF",
-        data=pdf_file.getvalue(),
-        file_name=pdf_file.name,
-        mime="application/pdf"
-    )
+    # Show PDF file with better display
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        # Display PDF content as text with chunk highlighting
+        try:
+            from utils.document_utils import get_text_from_file
+            pdf_text = get_text_from_file(pdf_file)
+            
+            # Show PDF text with chunk boundaries highlighted
+            st.markdown("**PDF Content with Chunk Boundaries:**")
+            _display_text_with_chunk_highlights(pdf_text, chunks, pattern_config)
+            
+        except Exception as e:
+            st.error(f"Could not display PDF content: {str(e)}")
+    
+    with col2:
+        # Download button
+        st.download_button(
+            label="📥 Download PDF",
+            data=pdf_file.getvalue(),
+            file_name=pdf_file.name,
+            mime="application/pdf"
+        )
+        
+        # PDF info
+        st.info(f"""
+        **File:** {pdf_file.name}  
+        **Size:** {pdf_file.size:,} bytes  
+        **Chunks:** {len(chunks)}
+        """)
     
     # Create chunk boundary visualization
-    st.markdown("### 🎯 Chunk Boundaries Visualization")
+    st.markdown("### 🎯 Chunk Layout Visualization")
     
     # Simulate PDF page layout with chunk boundaries
     _create_chunk_boundary_diagram(chunks, pattern_config)
+
+
+def _display_text_with_chunk_highlights(text, chunks, pattern_config):
+    """Display PDF text with chunk boundaries highlighted."""
+    
+    # Create a visual representation of the text with chunk boundaries
+    current_pos = 0
+    
+    for i, chunk in enumerate(chunks):
+        # Find chunk position in text
+        chunk_start = text.find(chunk[:100])  # Find by first 100 chars
+        if chunk_start == -1:
+            chunk_start = current_pos
+        
+        # Display chunk with highlighting
+        chunk_end = chunk_start + len(chunk)
+        
+        # Show chunk with color highlighting
+        st.markdown(f"""
+        <div style="
+            background-color: {pattern_config['color']}20;
+            border-left: 4px solid {pattern_config['color']};
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        ">
+            <strong>Chunk {i+1}</strong>
+            <div style="font-size: 0.9em; margin-top: 5px;">
+                {chunk[:300]}{'...' if len(chunk) > 300 else ''}
+            </div>
+            <div style="font-size: 0.8em; color: #666; margin-top: 5px;">
+                Position: {chunk_start}-{chunk_end} | Length: {len(chunk)} chars
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        current_pos = chunk_end
 
 
 def _create_chunk_boundary_diagram(chunks, pattern_config):
