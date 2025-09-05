@@ -5,7 +5,7 @@ import os
 
 from core.config_manager import ConfigManager
 from utils.ui import aggrid_model_picker, create_preprocessing_table, create_encoding_table, create_decoding_table
-from utils.ui.display import document_type_selector, pdf_upload_widget, chunking_preset_selector, advanced_chunking_options, visual_chunking_selector, chunking_pattern_comparison
+from utils.ui.display import document_type_selector, pdf_upload_widget, chunking_preset_selector, advanced_chunking_options, visual_chunking_selector, chunking_pattern_comparison, pdf_chunking_visualizer
 
 # --- Initialize configuration manager ---
 config_manager = ConfigManager()
@@ -54,8 +54,8 @@ if uploaded_files:
     # Chunking method selection
     chunking_method = st.radio(
         "Choose chunking method:",
-        ["👁️ Visual Selection (Recommended)", "📋 Preset Selection", "🔧 Advanced Options"],
-        help="Visual selection lets you see and choose example chunks to automatically determine the best pattern"
+        ["📄 PDF Visualizer (Recommended)", "👁️ Text Visual Selection", "📋 Preset Selection", "🔧 Advanced Options"],
+        help="PDF Visualizer shows chunks directly on your PDF document with highlighting"
     )
     
     # Helpful information for consultants
@@ -70,13 +70,19 @@ if uploaded_files:
         - 🎯 **Context Preservation**: Smart chunking keeps related information together
         
         **Choose your preferred method:**
-        - **👁️ Visual Selection**: See example chunks and select the ones you like
+        - **📄 PDF Visualizer**: See chunks highlighted directly on your PDF document
+        - **👁️ Text Visual Selection**: See example chunks and select the ones you like
         - **📋 Preset Selection**: Choose from predefined patterns
         - **🔧 Advanced Options**: Fine-tune all parameters manually
         """)
     
     # Route to appropriate chunking method
-    if chunking_method == "👁️ Visual Selection (Recommended)":
+    if chunking_method == "📄 PDF Visualizer (Recommended)":
+        # PDF chunking visualizer
+        selected_chunking_preset, chunking_params = pdf_chunking_visualizer(uploaded_files)
+        final_chunking_params = chunking_params
+        
+    elif chunking_method == "👁️ Text Visual Selection":
         # Visual chunking selector
         selected_chunking_preset, chunking_params = visual_chunking_selector(uploaded_files)
         final_chunking_params = chunking_params
@@ -93,7 +99,7 @@ if uploaded_files:
         selected_chunking_preset = "Custom Advanced"
     
     # Pattern comparison option
-    if chunking_method == "👁️ Visual Selection (Recommended)":
+    if chunking_method == "👁️ Text Visual Selection":
         show_comparison = st.checkbox("🔍 Show pattern comparison", help="Compare different chunking methods side-by-side")
         if show_comparison:
             chunking_pattern_comparison(uploaded_files)

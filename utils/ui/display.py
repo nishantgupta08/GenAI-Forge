@@ -560,3 +560,257 @@ def chunking_pattern_comparison(uploaded_files, key="pattern_comparison"):
     
     return pattern_results
 
+
+def pdf_chunking_visualizer(uploaded_files, key="pdf_chunking"):
+    """Visualize chunks directly on PDF with highlighting overlay."""
+    
+    if not uploaded_files:
+        return None, {}
+    
+    # Filter for PDF files
+    pdf_files = [f for f in uploaded_files if f.name.lower().endswith('.pdf')]
+    if not pdf_files:
+        st.warning("📄 PDF chunking visualizer requires PDF files. Please upload PDF documents.")
+        return None, {}
+    
+    st.subheader("📄 PDF Chunking Visualizer")
+    st.markdown("**See how different chunking methods split your PDF document**")
+    
+    # Select PDF file for visualization
+    if len(pdf_files) > 1:
+        selected_pdf = st.selectbox(
+            "Select PDF to visualize:",
+            options=[f.name for f in pdf_files],
+            key=f"{key}_pdf_select"
+        )
+        pdf_file = next(f for f in pdf_files if f.name == selected_pdf)
+    else:
+        pdf_file = pdf_files[0]
+        st.info(f"📄 Visualizing: **{pdf_file.name}**")
+    
+    # Chunking pattern selection
+    chunking_patterns = {
+        "Auto (Recommended)": {
+            "splitter_type": "recursive",
+            "chunk_size": 1000,
+            "chunk_overlap": 150,
+            "color": "#FF6B6B"
+        },
+        "Pages/Slides": {
+            "splitter_type": "page",
+            "chunk_size": 2000,
+            "chunk_overlap": 0,
+            "color": "#4ECDC4"
+        },
+        "Sentences": {
+            "splitter_type": "sentence",
+            "chunk_size": 800,
+            "chunk_overlap": 100,
+            "color": "#45B7D1"
+        },
+        "Fixed Size": {
+            "splitter_type": "character",
+            "chunk_size": 500,
+            "chunk_overlap": 50,
+            "color": "#96CEB4"
+        }
+    }
+    
+    # Pattern selection
+    selected_pattern = st.selectbox(
+        "Choose chunking pattern to visualize:",
+        options=list(chunking_patterns.keys()),
+        key=f"{key}_pattern_select"
+    )
+    
+    pattern_config = chunking_patterns[selected_pattern]
+    
+    try:
+        # Extract text from PDF
+        from utils.document_utils import get_text_from_file
+        raw_text = get_text_from_file(pdf_file)
+        
+        # Generate chunks
+        from components.preprocessor import LangchainPreprocessor
+        preprocessor = LangchainPreprocessor(**pattern_config)
+        chunks = preprocessor.run(raw_text)
+        
+        # Display PDF with chunk visualization
+        st.markdown(f"**{selected_pattern} Pattern** - {len(chunks)} chunks generated")
+        
+        # Create chunk visualization
+        _display_pdf_with_chunks(pdf_file, chunks, pattern_config, key)
+        
+        # Chunk selection interface
+        selected_chunks = _chunk_selection_interface(chunks, pattern_config, key)
+        
+        return selected_pattern, pattern_config
+        
+    except Exception as e:
+        st.error(f"Error processing PDF: {str(e)}")
+        return None, {}
+
+
+def _display_pdf_with_chunks(pdf_file, chunks, pattern_config, key):
+    """Display PDF with chunk highlighting overlay."""
+    
+    # PDF display using Streamlit's file display
+    st.markdown("### 📄 PDF Document with Chunk Boundaries")
+    
+    # Show PDF file
+    st.file_downloader(
+        label="Download PDF",
+        data=pdf_file.getvalue(),
+        file_name=pdf_file.name,
+        mime="application/pdf"
+    )
+    
+    # Create chunk boundary visualization
+    st.markdown("### 🎯 Chunk Boundaries Visualization")
+    
+    # Simulate PDF page layout with chunk boundaries
+    _create_chunk_boundary_diagram(chunks, pattern_config)
+
+
+def _create_chunk_boundary_diagram(chunks, pattern_config):
+    """Create a visual diagram showing chunk boundaries on a simulated PDF layout."""
+    
+    # Create a visual representation of the PDF with chunk boundaries
+    st.markdown("**Chunk Layout on Document:**")
+    
+    # Calculate approximate page layout
+    total_chars = sum(len(chunk) for chunk in chunks)
+    chars_per_page = 2000  # Approximate characters per page
+    total_pages = max(1, total_chars // chars_per_page)
+    
+    # Create page layout visualization
+    for page_num in range(min(3, total_pages)):  # Show first 3 pages
+        with st.container():
+            st.markdown(f"**Page {page_num + 1}**")
+            
+            # Create a visual representation of chunks on this page
+            page_start = page_num * chars_per_page
+            page_end = (page_num + 1) * chars_per_page
+            
+            # Find chunks that overlap with this page
+            page_chunks = []
+            current_pos = 0
+            for i, chunk in enumerate(chunks):
+                chunk_start = current_pos
+                chunk_end = current_pos + len(chunk)
+                
+                # Check if chunk overlaps with current page
+                if chunk_start < page_end and chunk_end > page_start:
+                    page_chunks.append({
+                        'index': i,
+                        'chunk': chunk,
+                        'start': max(0, chunk_start - page_start),
+                        'end': min(chars_per_page, chunk_end - page_start)
+                    })
+                
+                current_pos = chunk_end
+            
+            # Display chunks as colored blocks
+            if page_chunks:
+                for chunk_info in page_chunks:
+                    chunk_start_pct = (chunk_info['start'] / chars_per_page) * 100
+                    chunk_width_pct = ((chunk_info['end'] - chunk_info['start']) / chars_per_page) * 100
+                    
+                    # Create visual chunk block
+                    st.markdown(f"""
+                    <div style="
+                        background-color: {pattern_config['color']}20;
+                        border: 2px solid {pattern_config['color']};
+                        border-radius: 5px;
+                        padding: 10px;
+                        margin: 5px 0;
+                        position: relative;
+                    ">
+                        <strong>Chunk {chunk_info['index'] + 1}</strong>
+                        <div style="font-size: 0.9em; color: #666;">
+                            {chunk_info['chunk'][:100]}{'...' if len(chunk_info['chunk']) > 100 else ''}
+                        </div>
+                        <div style="font-size: 0.8em; color: #888;">
+                            Position: {chunk_info['start']}-{chunk_info['end']} | 
+                            Length: {len(chunk_info['chunk'])} chars
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info(f"No chunks on page {page_num + 1}")
+            
+            st.markdown("---")
+
+
+def _chunk_selection_interface(chunks, pattern_config, key):
+    """Interface for selecting chunks from the PDF visualization."""
+    
+    st.markdown("### ✅ Select Preferred Chunks")
+    st.markdown("**Click on chunks you like to build your preferred pattern**")
+    
+    selected_chunks = []
+    
+    # Display chunks in a grid for selection
+    cols = st.columns(2)
+    
+    for i, chunk in enumerate(chunks):
+        col_idx = i % 2
+        with cols[col_idx]:
+            with st.container():
+                # Chunk selection checkbox
+                is_selected = st.checkbox(
+                    f"Chunk {i+1}",
+                    key=f"{key}_chunk_{i}",
+                    help=f"Select this chunk (Length: {len(chunk)} chars)"
+                )
+                
+                if is_selected:
+                    selected_chunks.append(i)
+                
+                # Chunk preview
+                chunk_preview = chunk[:150] + "..." if len(chunk) > 150 else chunk
+                
+                # Highlight selected chunks
+                if is_selected:
+                    st.success(f"**Selected Chunk {i+1}**")
+                    st.markdown(f"""
+                    <div style="
+                        background-color: {pattern_config['color']}30;
+                        border: 2px solid {pattern_config['color']};
+                        border-radius: 5px;
+                        padding: 10px;
+                        margin: 5px 0;
+                    ">
+                        {chunk_preview}
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.text(chunk_preview)
+                
+                # Chunk metadata
+                st.caption(f"📊 {len(chunk)} chars | {len(chunk.split())} words")
+    
+    # Selection summary
+    if selected_chunks:
+        st.success(f"✅ Selected {len(selected_chunks)} chunks: {[i+1 for i in selected_chunks]}")
+        
+        # Show selection pattern
+        with st.expander("📊 Selection Analysis", expanded=True):
+            st.write(f"**Selected Chunks:** {len(selected_chunks)} out of {len(chunks)}")
+            st.write(f"**Selection Pattern:** {selected_chunks}")
+            
+            # Calculate average chunk size of selected chunks
+            selected_chunk_sizes = [len(chunks[i]) for i in selected_chunks]
+            avg_size = sum(selected_chunk_sizes) / len(selected_chunk_sizes) if selected_chunk_sizes else 0
+            st.write(f"**Average Selected Chunk Size:** {avg_size:.0f} characters")
+            
+            # Recommend adjustments
+            if avg_size > 1200:
+                st.info("💡 Your selected chunks are quite large. Consider 'Pages/Slides' or 'Sentences' pattern.")
+            elif avg_size < 400:
+                st.info("💡 Your selected chunks are quite small. Consider 'Fixed Size' pattern.")
+            else:
+                st.info("💡 Your selected chunks look well-sized. 'Auto' pattern might work well.")
+    
+    return selected_chunks
+
