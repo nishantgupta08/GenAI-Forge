@@ -663,19 +663,22 @@ def _scanned_pdf_visualizer(pdf_file, key):
     # Create two-column layout
     col1, col2 = st.columns([2, 1])
     
-    with col1:
-        # PDF renderer with chunk highlighting
-        _render_pdf_with_chunks(pdf_file, key)
-    
+    # Right-side chunking controls
     with col2:
-        # Chunking method selector
         selected_pattern, pattern_config = _chunking_method_selector(key)
-        
-        # Chunk selection interface
-        if selected_pattern:
-            chunks = _generate_chunks_for_scanned_pdf(pdf_file, pattern_config)
-            if chunks:
-                _scanned_pdf_chunk_selector(chunks, pattern_config, key)
+        chunks = _generate_chunks_for_scanned_pdf(pdf_file, pattern_config)
+    
+    # Left-side: colored text chunks (no PDF rendering)
+    with col1:
+        if 'chunks' in locals() and chunks:
+            _render_colored_chunks(chunks, title="Colored Chunk View (Scanned PDF)")
+        else:
+            st.info("Upload a PDF and choose a chunking method to see colored chunks here.")
+    
+    # Quick selection list on the right
+    with col2:
+        if 'chunks' in locals() and chunks:
+            _scanned_pdf_chunk_selector(chunks, pattern_config, key)
     
     return selected_pattern, pattern_config
 
@@ -730,11 +733,9 @@ def _text_pdf_visualizer(pdf_file, key):
         preprocessor = LangchainPreprocessor(**pattern_config)
         chunks = preprocessor.run(raw_text)
         
-        # Display PDF with chunk visualization
+        # Display colored chunk text visualization (no PDF rendering)
         st.markdown(f"**{selected_pattern} Pattern** - {len(chunks)} chunks generated")
-        
-        # Create chunk visualization
-        _display_pdf_with_chunks(pdf_file, chunks, pattern_config, key)
+        _render_colored_chunks(chunks, title="Colored Chunk View (Text PDF)")
         
         # Chunk selection interface
         selected_chunks = _chunk_selection_interface(chunks, pattern_config, key)
@@ -1043,6 +1044,48 @@ def _display_pdf_with_chunks(pdf_file, chunks, pattern_config, key):
     
     # Simulate PDF page layout with chunk boundaries
     _create_chunk_boundary_diagram(chunks, pattern_config)
+
+
+def _render_colored_chunks(chunks, title="Colored Chunks"):
+    """Render chunks as colored blocks (HTML) with alternating colors and truncation."""
+    st.markdown(f"### {title}")
+    if not chunks:
+        st.info("No chunks to display.")
+        return
+    # Pastel palette rotates across chunks
+    palette = [
+        "#FFCDD2",  # light red
+        "#C8E6C9",  # light green
+        "#BBDEFB",  # light blue
+        "#FFF9C4",  # light yellow
+        "#D1C4E9",  # light purple
+        "#FFE0B2",  # light orange
+    ]
+    border_palette = [
+        "#E57373",
+        "#81C784",
+        "#64B5F6",
+        "#FFF176",
+        "#9575CD",
+        "#FFB74D",
+    ]
+    for i, chunk in enumerate(chunks):
+        bg = palette[i % len(palette)]
+        border = border_palette[i % len(border_palette)]
+        preview = (chunk[:600] + "...") if len(chunk) > 600 else chunk
+        st.markdown(f"""
+        <div style="
+            background-color: {bg};
+            border-left: 6px solid {border};
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin: 8px 0;
+        ">
+            <div style="font-weight:600;margin-bottom:6px;">Chunk {i+1}</div>
+            <div style="white-space:pre-wrap; font-size:0.95em; line-height:1.5;">{preview}</div>
+            <div style="color:#666; font-size:0.8em; margin-top:6px;">Length: {len(chunk)} chars</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 def _display_text_with_chunk_highlights(text, chunks, pattern_config):
