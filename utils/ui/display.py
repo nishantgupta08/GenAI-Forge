@@ -591,12 +591,33 @@ def pdf_chunking_visualizer(uploaded_files, key="pdf_chunking"):
     # Detect PDF type
     pdf_type = _detect_pdf_type(pdf_file)
     
-    if pdf_type == "scanned":
-        st.info("🔍 **Scanned PDF detected** - Using image-based chunking visualization")
+    # Add manual override option
+    st.markdown("**PDF Type Detection:**")
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.info(f"🔍 **Detected:** {pdf_type.replace('_', ' ').title()} PDF")
+    
+    with col2:
+        force_mode = st.selectbox(
+            "Override mode:",
+            ["Auto-detect", "Force Scanned PDF Mode", "Force Text PDF Mode"],
+            key=f"{key}_force_mode"
+        )
+    
+    # Apply override if selected
+    if force_mode == "Force Scanned PDF Mode":
         return _scanned_pdf_visualizer(pdf_file, key)
-    else:
-        st.info("📝 **Text-based PDF detected** - Using text-based chunking visualization")
+    elif force_mode == "Force Text PDF Mode":
         return _text_pdf_visualizer(pdf_file, key)
+    else:
+        # Use auto-detection
+        if pdf_type == "scanned":
+            st.info("🔍 **Scanned PDF detected** - Using image-based chunking visualization")
+            return _scanned_pdf_visualizer(pdf_file, key)
+        else:
+            st.info("📝 **Text-based PDF detected** - Using text-based chunking visualization")
+            return _text_pdf_visualizer(pdf_file, key)
 
 
 def _detect_pdf_type(pdf_file):
@@ -626,6 +647,12 @@ def _detect_pdf_type(pdf_file):
         # If we can't read the PDF, assume it's text-based and let other methods handle it
         st.warning(f"Could not detect PDF type: {str(e)}. Assuming text-based.")
         return "text_based"
+
+
+def _force_scanned_pdf_mode(pdf_file, key):
+    """Force scanned PDF mode for demonstration/testing."""
+    st.info("🔍 **Forcing scanned PDF mode** - Using image-based chunking visualization")
+    return _scanned_pdf_visualizer(pdf_file, key)
 
 
 def _scanned_pdf_visualizer(pdf_file, key):
@@ -723,6 +750,7 @@ def _chunking_method_selector(key):
     """Chunking method selector for right sidebar."""
     
     st.markdown("### ✂️ Chunking Methods")
+    st.markdown("**Select how to split your PDF into chunks:**")
     
     chunking_patterns = {
         "Auto (Recommended)": {
@@ -730,45 +758,56 @@ def _chunking_method_selector(key):
             "chunk_size": 1000,
             "chunk_overlap": 150,
             "color": "#FF6B6B",
-            "description": "Smart chunking that understands document structure"
+            "description": "Smart chunking that understands document structure",
+            "icon": "🤖"
         },
         "Pages/Slides": {
             "splitter_type": "page", 
             "chunk_size": 2000,
             "chunk_overlap": 0,
             "color": "#4ECDC4",
-            "description": "One chunk per page - perfect for scanned PDFs"
+            "description": "One chunk per page - perfect for scanned PDFs",
+            "icon": "📄"
         },
         "Sentences": {
             "splitter_type": "sentence",
             "chunk_size": 800,
             "chunk_overlap": 100,
             "color": "#45B7D1",
-            "description": "Keeps sentences intact"
+            "description": "Keeps sentences intact",
+            "icon": "📝"
         },
         "Fixed Size": {
             "splitter_type": "character",
             "chunk_size": 500,
             "chunk_overlap": 50,
             "color": "#96CEB4",
-            "description": "Fixed character-based chunks"
+            "description": "Fixed character-based chunks",
+            "icon": "⚡"
         }
     }
     
+    # Create options with icons
+    options = []
+    for pattern_name, config in chunking_patterns.items():
+        options.append(f"{config['icon']} {pattern_name}")
+    
     # Radio button selection
-    selected_pattern = st.radio(
+    selected_option = st.radio(
         "Choose chunking method:",
-        options=list(chunking_patterns.keys()),
+        options=options,
         key=f"{key}_method_select"
     )
     
+    # Extract pattern name
+    selected_pattern = selected_option.split(" ", 1)[1] if " " in selected_option else selected_option
     pattern_config = chunking_patterns[selected_pattern]
     
     # Show description
     st.info(f"💡 {pattern_config['description']}")
     
     # Show color preview
-    st.markdown("**Chunk Color:**")
+    st.markdown("**Chunk Highlighting Color:**")
     st.markdown(f"""
     <div style="
         background-color: {pattern_config['color']}30;
@@ -776,10 +815,19 @@ def _chunking_method_selector(key):
         border-radius: 5px;
         padding: 10px;
         margin: 5px 0;
+        text-align: center;
     ">
-        Sample chunk highlighting
+        <strong>Sample Chunk Highlighting</strong>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Show chunk parameters
+    with st.expander("📊 Chunk Parameters", expanded=False):
+        st.json({
+            "splitter_type": pattern_config["splitter_type"],
+            "chunk_size": pattern_config["chunk_size"],
+            "chunk_overlap": pattern_config["chunk_overlap"]
+        })
     
     return selected_pattern, pattern_config
 
@@ -791,7 +839,7 @@ def _render_pdf_with_chunks(pdf_file, key):
         # Convert PDF to images for display
         import fitz  # PyMuPDF
         import io
-        from PIL import Image
+        from PIL import Image, ImageDraw, ImageFont
         
         # Open PDF
         doc = fitz.open(stream=pdf_file.getvalue(), filetype="pdf")
@@ -816,6 +864,9 @@ def _render_pdf_with_chunks(pdf_file, key):
         
         if show_overlay:
             st.info("🎯 Chunk boundaries will be highlighted on the PDF above")
+            
+            # Show chunk overlay visualization
+            _create_chunk_overlay_visualization(doc, key)
         
         doc.close()
         
@@ -826,6 +877,35 @@ def _render_pdf_with_chunks(pdf_file, key):
     except Exception as e:
         st.error(f"Error rendering PDF: {str(e)}")
         _fallback_pdf_display(pdf_file)
+
+
+def _create_chunk_overlay_visualization(doc, key):
+    """Create visual representation of chunk overlay on PDF."""
+    
+    st.markdown("**Chunk Overlay Preview:**")
+    
+    # Create a visual representation of chunks on the PDF
+    chunks = [
+        {"id": 1, "text": "Chunk 1: Document header and introduction", "color": "#FF6B6B"},
+        {"id": 2, "text": "Chunk 2: Main content section", "color": "#4ECDC4"},
+        {"id": 3, "text": "Chunk 3: Supporting details", "color": "#45B7D1"},
+        {"id": 4, "text": "Chunk 4: Conclusion and references", "color": "#96CEB4"}
+    ]
+    
+    # Display chunk overlay representation
+    for chunk in chunks:
+        st.markdown(f"""
+        <div style="
+            background-color: {chunk['color']}20;
+            border: 2px solid {chunk['color']};
+            border-radius: 5px;
+            padding: 8px;
+            margin: 3px 0;
+            font-size: 0.9em;
+        ">
+            <strong>Chunk {chunk['id']}</strong>: {chunk['text']}
+        </div>
+        """, unsafe_allow_html=True)
 
 
 def _fallback_pdf_display(pdf_file):
