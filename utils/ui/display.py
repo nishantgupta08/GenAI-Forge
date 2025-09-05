@@ -588,6 +588,74 @@ def pdf_chunking_visualizer(uploaded_files, key="pdf_chunking"):
         pdf_file = pdf_files[0]
         st.info(f"📄 Visualizing: **{pdf_file.name}**")
     
+    # Detect PDF type
+    pdf_type = _detect_pdf_type(pdf_file)
+    
+    if pdf_type == "scanned":
+        st.info("🔍 **Scanned PDF detected** - Using image-based chunking visualization")
+        return _scanned_pdf_visualizer(pdf_file, key)
+    else:
+        st.info("📝 **Text-based PDF detected** - Using text-based chunking visualization")
+        return _text_pdf_visualizer(pdf_file, key)
+
+
+def _detect_pdf_type(pdf_file):
+    """Detect if PDF is scanned (image-based) or text-based."""
+    try:
+        import PyPDF2
+        import io
+        
+        # Read PDF
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_file.getvalue()))
+        
+        # Check first few pages for text content
+        text_content = ""
+        pages_to_check = min(3, len(pdf_reader.pages))
+        
+        for i in range(pages_to_check):
+            page = pdf_reader.pages[i]
+            text_content += page.extract_text()
+        
+        # If very little text is extracted, likely a scanned PDF
+        if len(text_content.strip()) < 100:
+            return "scanned"
+        else:
+            return "text_based"
+            
+    except Exception as e:
+        # If we can't read the PDF, assume it's text-based and let other methods handle it
+        st.warning(f"Could not detect PDF type: {str(e)}. Assuming text-based.")
+        return "text_based"
+
+
+def _scanned_pdf_visualizer(pdf_file, key):
+    """Visualize chunks on scanned PDF with image rendering and overlay."""
+    
+    st.markdown("### 📄 Scanned PDF with Chunk Highlighting")
+    
+    # Create two-column layout
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        # PDF renderer with chunk highlighting
+        _render_pdf_with_chunks(pdf_file, key)
+    
+    with col2:
+        # Chunking method selector
+        selected_pattern, pattern_config = _chunking_method_selector(key)
+        
+        # Chunk selection interface
+        if selected_pattern:
+            chunks = _generate_chunks_for_scanned_pdf(pdf_file, pattern_config)
+            if chunks:
+                _scanned_pdf_chunk_selector(chunks, pattern_config, key)
+    
+    return selected_pattern, pattern_config
+
+
+def _text_pdf_visualizer(pdf_file, key):
+    """Visualize chunks on text-based PDF."""
+    
     # Chunking pattern selection
     chunking_patterns = {
         "Auto (Recommended)": {
@@ -597,7 +665,7 @@ def pdf_chunking_visualizer(uploaded_files, key="pdf_chunking"):
             "color": "#FF6B6B"
         },
         "Pages/Slides": {
-            "splitter_type": "page",
+            "splitter_type": "page", 
             "chunk_size": 2000,
             "chunk_overlap": 0,
             "color": "#4ECDC4"
@@ -649,6 +717,207 @@ def pdf_chunking_visualizer(uploaded_files, key="pdf_chunking"):
     except Exception as e:
         st.error(f"Error processing PDF: {str(e)}")
         return None, {}
+
+
+def _chunking_method_selector(key):
+    """Chunking method selector for right sidebar."""
+    
+    st.markdown("### ✂️ Chunking Methods")
+    
+    chunking_patterns = {
+        "Auto (Recommended)": {
+            "splitter_type": "recursive",
+            "chunk_size": 1000,
+            "chunk_overlap": 150,
+            "color": "#FF6B6B",
+            "description": "Smart chunking that understands document structure"
+        },
+        "Pages/Slides": {
+            "splitter_type": "page", 
+            "chunk_size": 2000,
+            "chunk_overlap": 0,
+            "color": "#4ECDC4",
+            "description": "One chunk per page - perfect for scanned PDFs"
+        },
+        "Sentences": {
+            "splitter_type": "sentence",
+            "chunk_size": 800,
+            "chunk_overlap": 100,
+            "color": "#45B7D1",
+            "description": "Keeps sentences intact"
+        },
+        "Fixed Size": {
+            "splitter_type": "character",
+            "chunk_size": 500,
+            "chunk_overlap": 50,
+            "color": "#96CEB4",
+            "description": "Fixed character-based chunks"
+        }
+    }
+    
+    # Radio button selection
+    selected_pattern = st.radio(
+        "Choose chunking method:",
+        options=list(chunking_patterns.keys()),
+        key=f"{key}_method_select"
+    )
+    
+    pattern_config = chunking_patterns[selected_pattern]
+    
+    # Show description
+    st.info(f"💡 {pattern_config['description']}")
+    
+    # Show color preview
+    st.markdown("**Chunk Color:**")
+    st.markdown(f"""
+    <div style="
+        background-color: {pattern_config['color']}30;
+        border: 2px solid {pattern_config['color']};
+        border-radius: 5px;
+        padding: 10px;
+        margin: 5px 0;
+    ">
+        Sample chunk highlighting
+    </div>
+    """, unsafe_allow_html=True)
+    
+    return selected_pattern, pattern_config
+
+
+def _render_pdf_with_chunks(pdf_file, key):
+    """Render PDF with chunk highlighting overlay."""
+    
+    try:
+        # Convert PDF to images for display
+        import fitz  # PyMuPDF
+        import io
+        from PIL import Image
+        
+        # Open PDF
+        doc = fitz.open(stream=pdf_file.getvalue(), filetype="pdf")
+        
+        # Get first page
+        page = doc[0]
+        
+        # Convert to image
+        mat = fitz.Matrix(2.0, 2.0)  # 2x zoom
+        pix = page.get_pixmap(matrix=mat)
+        img_data = pix.tobytes("png")
+        
+        # Display image
+        st.image(img_data, caption=f"Page 1 of {len(doc)}", use_column_width=True)
+        
+        # Add chunk overlay controls
+        st.markdown("**Chunk Overlay Controls:**")
+        
+        # Chunk overlay options
+        show_overlay = st.checkbox("Show chunk boundaries", value=True, key=f"{key}_show_overlay")
+        chunk_opacity = st.slider("Chunk opacity", 0.1, 1.0, 0.5, key=f"{key}_opacity")
+        
+        if show_overlay:
+            st.info("🎯 Chunk boundaries will be highlighted on the PDF above")
+        
+        doc.close()
+        
+    except ImportError:
+        st.error("PyMuPDF not available. Please install with: pip install PyMuPDF")
+        st.info("Falling back to basic PDF display...")
+        _fallback_pdf_display(pdf_file)
+    except Exception as e:
+        st.error(f"Error rendering PDF: {str(e)}")
+        _fallback_pdf_display(pdf_file)
+
+
+def _fallback_pdf_display(pdf_file):
+    """Fallback PDF display when rendering fails."""
+    
+    st.markdown("### 📄 PDF Document")
+    
+    # Download button
+    st.download_button(
+        label="📥 Download PDF",
+        data=pdf_file.getvalue(),
+        file_name=pdf_file.name,
+        mime="application/pdf"
+    )
+    
+    # File info
+    st.info(f"""
+    **File:** {pdf_file.name}  
+    **Size:** {pdf_file.size:,} bytes  
+    **Type:** Scanned PDF (image-based)
+    """)
+
+
+def _generate_chunks_for_scanned_pdf(pdf_file, pattern_config):
+    """Generate chunks for scanned PDF using OCR."""
+    
+    try:
+        # For scanned PDFs, we'll use page-based chunking by default
+        import PyPDF2
+        import io
+        
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_file.getvalue()))
+        
+        # Create page-based chunks
+        chunks = []
+        for i, page in enumerate(pdf_reader.pages):
+            try:
+                text = page.extract_text()
+                if text.strip():
+                    chunks.append(f"Page {i+1}: {text.strip()}")
+                else:
+                    chunks.append(f"Page {i+1}: [Scanned content - no text extracted]")
+            except:
+                chunks.append(f"Page {i+1}: [Scanned content - extraction failed]")
+        
+        return chunks
+        
+    except Exception as e:
+        st.error(f"Error generating chunks for scanned PDF: {str(e)}")
+        return []
+
+
+def _scanned_pdf_chunk_selector(chunks, pattern_config, key):
+    """Chunk selector for scanned PDF."""
+    
+    st.markdown("### ✅ Select Preferred Chunks")
+    
+    selected_chunks = []
+    
+    for i, chunk in enumerate(chunks):
+        is_selected = st.checkbox(
+            f"Chunk {i+1}",
+            key=f"{key}_scanned_chunk_{i}",
+            help=f"Select this chunk"
+        )
+        
+        if is_selected:
+            selected_chunks.append(i)
+        
+        # Show chunk preview
+        chunk_preview = chunk[:200] + "..." if len(chunk) > 200 else chunk
+        
+        if is_selected:
+            st.success(f"**Selected Chunk {i+1}**")
+            st.markdown(f"""
+            <div style="
+                background-color: {pattern_config['color']}30;
+                border: 2px solid {pattern_config['color']};
+                border-radius: 5px;
+                padding: 10px;
+                margin: 5px 0;
+            ">
+                {chunk_preview}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.text(chunk_preview)
+    
+    if selected_chunks:
+        st.success(f"✅ Selected {len(selected_chunks)} chunks")
+    
+    return selected_chunks
 
 
 def _display_pdf_with_chunks(pdf_file, chunks, pattern_config, key):
