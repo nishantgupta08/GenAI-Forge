@@ -945,17 +945,37 @@ def _highlight_text_chunks_on_pdf(pdf_file, chunks, per_chunk_snippet_len=40):
         ]
 
         total_pages = len(doc)
-        col_a, col_b = st.columns([2, 1])
+        col_a, col_b, col_c = st.columns([2, 1, 1])
         with col_b:
             render_all = st.checkbox("Render all pages (may be slow)")
+            scale = st.slider("Zoom", 1.0, 3.0, 2.0, 0.25, help="Render scale")
         with col_a:
             page_index = st.slider("Page", 1, total_pages, 1, help="Jump to any page")
+        with col_c:
+            # Chunk selection controls
+            max_show = min(100, len(chunks))
+            labels = [f"Chunk {i+1}" for i in range(max_show)]
+            default_selection = labels  # highlight all by default
+            selected_labels = st.multiselect(
+                "Highlight chunks",
+                options=labels,
+                default=default_selection,
+                help="Choose which chunks to highlight on the page"
+            )
+            selected_indices = {int(lbl.split(" ")[1]) - 1 for lbl in selected_labels}
+            per_chunk_snippet_len = st.slider(
+                "Snippet length",
+                10,
+                200,
+                per_chunk_snippet_len,
+                help="Use the first N characters of each chunk to search on page"
+            )
 
         pages_to_render = range(total_pages) if render_all else [page_index - 1]
 
         for pno in pages_to_render:
             page = doc[pno]
-            mat = fitz.Matrix(2.0, 2.0)
+            mat = fitz.Matrix(scale, scale)
             pix = page.get_pixmap(matrix=mat)
             img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGBA")
             overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -963,6 +983,8 @@ def _highlight_text_chunks_on_pdf(pdf_file, chunks, per_chunk_snippet_len=40):
 
             # For each chunk, search for its opening snippet on this page
             for i, chunk in enumerate(chunks):
+                if selected_labels and i not in selected_indices:
+                    continue
                 snippet = (chunk[:per_chunk_snippet_len] or "").strip()
                 if not snippet:
                     continue
@@ -981,6 +1003,16 @@ def _highlight_text_chunks_on_pdf(pdf_file, chunks, per_chunk_snippet_len=40):
             # Composite overlay onto image
             highlighted = Image.alpha_composite(img, overlay)
             st.image(highlighted, caption=f"Highlighted: Page {pno + 1} / {total_pages}", use_column_width=True)
+
+        # Legend
+        st.markdown("**Legend**")
+        legend_html = "<div style=\"display:flex;flex-wrap:wrap;gap:8px;\">"
+        for i in range(min(len(chunks), len(palette))):
+            rgba = palette[i]
+            color_hex = '#%02x%02x%02x' % (rgba[0], rgba[1], rgba[2])
+            legend_html += f"<div style=\"display:flex;align-items:center;gap:6px;\"><span style=\"display:inline-block;width:14px;height:14px;background:{color_hex};border:1px solid rgba(0,0,0,0.2);\"></span><span style=\"font-size:12px;\">Chunk {i+1}</span></div>"
+        legend_html += "</div>"
+        st.markdown(legend_html, unsafe_allow_html=True)
 
         doc.close()
 
