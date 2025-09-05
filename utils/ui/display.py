@@ -165,3 +165,164 @@ def document_type_selector(key="document_type"):
     
     return selected_type, document_types.get(selected_type, {}).get('encoding_params', {})
 
+
+def chunking_preset_selector(uploaded_files=None, key="chunking_preset"):
+    """Renders a user-friendly chunking preset selector with smart defaults."""
+    
+    # Define chunking presets
+    chunking_presets = {
+        "Auto (Recommended)": {
+            "description": "Understands headings/sections. Best for reports and proposals.",
+            "icon": "🤖",
+            "params": {
+                "splitter_type": "recursive",
+                "chunk_size": 1000,
+                "chunk_overlap": 150,
+                "preserve_structure": True,
+                "enhance_retrieval": True
+            }
+        },
+        "Pages/Slides": {
+            "description": "One chunk per page/slide. Best for decks & scanned PDFs.",
+            "icon": "📄",
+            "params": {
+                "splitter_type": "page",
+                "chunk_size": 2000,
+                "chunk_overlap": 0,
+                "preserve_structure": True,
+                "enhance_retrieval": False
+            }
+        },
+        "Sentences": {
+            "description": "Keeps sentences intact. Best for legal/long-form docs.",
+            "icon": "📝",
+            "params": {
+                "splitter_type": "sentence",
+                "chunk_size": 800,
+                "chunk_overlap": 100,
+                "preserve_structure": True,
+                "enhance_retrieval": True
+            }
+        },
+        "Fixed": {
+            "description": "Fastest. Use when you just need quick results.",
+            "icon": "⚡",
+            "params": {
+                "splitter_type": "character",
+                "chunk_size": 500,
+                "chunk_overlap": 50,
+                "preserve_structure": False,
+                "enhance_retrieval": False
+            }
+        }
+    }
+    
+    # Smart recommendation based on uploaded files
+    recommended_preset = "Auto (Recommended)"
+    if uploaded_files:
+        file_extensions = [f.name.lower().split('.')[-1] for f in uploaded_files if hasattr(f, 'name')]
+        
+        # Check for PowerPoint files
+        if any(ext in ['pptx', 'ppt'] for ext in file_extensions):
+            recommended_preset = "Pages/Slides"
+        # Check for PDFs with many pages (estimate based on file size)
+        elif any(ext == 'pdf' for ext in file_extensions):
+            large_pdfs = [f for f in uploaded_files if hasattr(f, 'size') and f.size > 5 * 1024 * 1024]  # >5MB
+            if large_pdfs:
+                recommended_preset = "Pages/Slides"
+    
+    # Create options with icons and descriptions
+    options = []
+    for preset_name, config in chunking_presets.items():
+        options.append(f"{config['icon']} {preset_name}")
+    
+    # Find index of recommended preset
+    recommended_index = list(chunking_presets.keys()).index(recommended_preset)
+    
+    # Display recommendation
+    if uploaded_files and recommended_preset != "Auto (Recommended)":
+        st.info(f"💡 **Smart Recommendation**: Based on your files, we recommend **{recommended_preset}**")
+    
+    # Radio button selection
+    selected_option = st.radio(
+        "Choose Chunking Method:",
+        options=options,
+        index=recommended_index,
+        key=key,
+        help="Select how you want to split your documents into searchable chunks"
+    )
+    
+    # Extract the preset name from the selected option
+    selected_preset = selected_option.split(" ", 1)[1] if " " in selected_option else selected_option
+    
+    # Display description
+    if selected_preset in chunking_presets:
+        config = chunking_presets[selected_preset]
+        st.caption(f"💡 {config['description']}")
+    
+    return selected_preset, chunking_presets.get(selected_preset, {}).get('params', {})
+
+
+def advanced_chunking_options(key_prefix="advanced_chunking"):
+    """Renders advanced chunking options in a collapsible section."""
+    
+    with st.expander("🔧 Advanced Chunking Options", expanded=False):
+        st.markdown("**Fine-tune your chunking settings**")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            chunk_size = st.slider(
+                "Chunk Size",
+                min_value=100,
+                max_value=4000,
+                value=1000,
+                step=100,
+                key=f"{key_prefix}_size",
+                help="Larger chunks = more context, smaller chunks = faster indexing"
+            )
+            
+            overlap = st.slider(
+                "Overlap",
+                min_value=0,
+                max_value=500,
+                value=150,
+                step=25,
+                key=f"{key_prefix}_overlap",
+                help="Overlap between chunks to prevent information loss"
+            )
+        
+        with col2:
+            preserve_structure = st.checkbox(
+                "Preserve Document Structure",
+                value=True,
+                key=f"{key_prefix}_structure",
+                help="Keep headings, paragraphs, and formatting intact"
+            )
+            
+            enhance_retrieval = st.checkbox(
+                "Enhance for Retrieval",
+                value=True,
+                key=f"{key_prefix}_retrieval",
+                help="Add metadata and keywords for better search results"
+            )
+        
+        # Splitter type selection
+        splitter_type = st.selectbox(
+            "Splitter Type",
+            options=["recursive", "sentence", "character", "page"],
+            index=0,
+            key=f"{key_prefix}_splitter",
+            help="How to split the text: recursive (smart), sentence, character, or page-based"
+        )
+        
+        return {
+            "chunk_size": chunk_size,
+            "chunk_overlap": overlap,
+            "preserve_structure": preserve_structure,
+            "enhance_retrieval": enhance_retrieval,
+            "splitter_type": splitter_type
+        }
+    
+    return None
+

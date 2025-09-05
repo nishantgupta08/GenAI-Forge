@@ -5,7 +5,7 @@ import os
 
 from core.config_manager import ConfigManager
 from utils.ui import aggrid_model_picker, create_preprocessing_table, create_encoding_table, create_decoding_table
-from utils.ui.display import document_type_selector, pdf_upload_widget
+from utils.ui.display import document_type_selector, pdf_upload_widget, chunking_preset_selector, advanced_chunking_options
 
 # --- Initialize configuration manager ---
 config_manager = ConfigManager()
@@ -41,10 +41,48 @@ with col2:
     st.subheader("📄 Document Upload")
     uploaded_files = st.file_uploader(
         "Upload documents to index",
-        type=["pdf", "txt", "docx"],
+        type=["pdf", "txt", "docx", "pptx", "ppt"],
         accept_multiple_files=True,
         help="Upload multiple documents for batch indexing"
     )
+
+# --- Chunking Configuration ---
+if uploaded_files:
+    st.subheader("✂️ Document Chunking")
+    st.markdown("Choose how to split your documents into searchable chunks")
+    
+    # Helpful information for consultants
+    with st.expander("💡 What is document chunking?", expanded=False):
+        st.markdown("""
+        **Document chunking** breaks your documents into smaller, searchable pieces called "chunks". 
+        This helps the AI system find relevant information quickly and accurately.
+        
+        **Why it matters:**
+        - 📚 **Better Search**: Smaller chunks = more precise search results
+        - ⚡ **Faster Processing**: Optimized chunk sizes improve performance  
+        - 🎯 **Context Preservation**: Smart chunking keeps related information together
+        
+        **Our presets are designed for different document types:**
+        - **Auto**: Works great for most business documents
+        - **Pages/Slides**: Perfect for presentations and scanned PDFs
+        - **Sentences**: Ideal for legal documents and contracts
+        - **Fixed**: Fastest option for quick results
+        """)
+    
+    # Chunking preset selection
+    selected_chunking_preset, chunking_params = chunking_preset_selector(uploaded_files)
+    
+    # Advanced options (collapsed by default)
+    advanced_params = advanced_chunking_options()
+    
+    # Use advanced params if provided, otherwise use preset params
+    final_chunking_params = advanced_params if advanced_params else chunking_params
+    
+    # Display current chunking configuration
+    with st.expander("📊 Current Chunking Configuration", expanded=False):
+        st.json(final_chunking_params)
+else:
+    final_chunking_params = {}
 
 # --- Encoder Model Selection ---
 st.subheader("🤖 Select Encoder Model")
@@ -99,6 +137,15 @@ if task_blocks:
                         model_name = selected_encoder['name'] if selected_encoder else None
                         encoding_params = create_encoding_table(params, task, model_name)
                     elif block.lower() == "preprocessing":
+                        # Use chunking preset parameters instead of default preprocessing
+                        if final_chunking_params:
+                            # Override default preprocessing params with chunking preset params
+                            for param_name, param_value in final_chunking_params.items():
+                                if param_name in params:
+                                    params[param_name]["ideal"] = param_value
+                            
+                            st.info(f"✂️ Applied {selected_chunking_preset} chunking configuration")
+                        
                         preprocessing_params = create_preprocessing_table(params, task)
 
 # --- Document Indexing Execution ---
@@ -128,15 +175,32 @@ def execute_document_indexing(files, doc_type, encoder_name, encoding_params, pr
 if uploaded_files and selected_encoder:
     st.subheader("📊 Indexing Summary")
     
-    # Display file information
-    st.write(f"**Document Type:** {selected_doc_type}")
-    st.write(f"**Encoder Model:** {selected_encoder['name']}")
-    st.write(f"**Number of Files:** {len(uploaded_files)}")
+    # Display configuration information
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("Document Type", selected_doc_type)
+        st.metric("Number of Files", len(uploaded_files))
+    
+    with col2:
+        st.metric("Chunking Method", selected_chunking_preset)
+        st.metric("Encoder Model", selected_encoder['name'])
+    
+    with col3:
+        # Show chunking parameters
+        if final_chunking_params:
+            st.metric("Chunk Size", f"{final_chunking_params.get('chunk_size', 'N/A')}")
+            st.metric("Overlap", f"{final_chunking_params.get('chunk_overlap', 'N/A')}")
     
     # Show file details
     with st.expander("📁 Uploaded Files", expanded=True):
         for i, file in enumerate(uploaded_files):
-            st.write(f"{i+1}. **{file.name}** ({file.size:,} bytes)")
+            file_type = file.name.split('.')[-1].upper() if '.' in file.name else 'Unknown'
+            st.write(f"{i+1}. **{file.name}** ({file.size:,} bytes) - {file_type}")
+    
+    # Show chunking configuration
+    with st.expander("✂️ Chunking Configuration", expanded=False):
+        st.json(final_chunking_params)
     
     # Indexing button
     index_clicked = st.button("🚀 Start Document Indexing", type="primary")
